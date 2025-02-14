@@ -8,11 +8,15 @@ app.use(cors());
 app.use(express.json());
 
 // Conectar a MongoDB
-mongoose.connect(process.env.MONGO_URI).then(() => console.log('✅ Conectado a MongoDB'))
-  .catch(err => console.error('❌ Error en la conexión a MongoDB:', err));
+mongoose.connect(process.env.MONGO_URI).then(() => console.log('✅ Conected to MongoDB'))
+  .catch(err => console.error('❌ Error connecting to MongoDB', err));
 
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+const voteRoutes = require('./routes/votes');
+app.use('/api/votes', voteRoutes);
+const singersRoutes = require('./routes/singers');
+app.use('/api/singers', singersRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🔥 Servidor corriendo en el puerto ${PORT}`));
+app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));

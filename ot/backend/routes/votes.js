@@ -5,9 +5,9 @@ const Singer = require('../models/Singer');
 
 const router = express.Router();
 
-router.post('/vote', async (req, res) => {
-    const { singerId, userId } = req.body;
-
+router.post('/vote',verifyToken, async (req, res) => {
+    const { singerId} = req.body;
+    const userId = req.user.userId;
     try {
         const existingVote = await Vote.findOne({ user: userId, singer: singerId });
         if (existingVote) {

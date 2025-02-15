@@ -9,14 +9,14 @@ router.post('/add', async (req, res) => {
     try {
         const existingSinger = await Singer.findOne({ name });
         if (existingSinger) {
-            return res.status(400).json({ msg: 'El cantante ya existe' });
+            return res.status(400).json({ msg: 'The singer already exists' });
         }
         const newSinger = new Singer({ name, image });
         await newSinger.save();
 
-        res.status(201).json({ msg: 'Cantante agregado con éxito', singer: newSinger });
+        res.status(201).json({ msg: 'Singer added successfully', singer: newSinger });
     } catch (err) {
-        res.status(500).json({ msg: 'Error en el servidor' });
+        res.status(500).json({ msg: 'Error in the server' });
     }
 });
 
@@ -25,7 +25,7 @@ router.get('/all', async (req, res) => {
         const singers = await Singer.find();
         res.json(singers);
     } catch (err) {
-        res.status(500).json({ msg: 'Error en el servidor' });
+        res.status(500).json({ msg: 'Error in the server' });
     }
 });
 

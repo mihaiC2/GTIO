@@ -13,6 +13,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => console.log('✅ Conected to 
 
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+const userRoutes = require('./routes/users');
+app.use('/api/users', userRoutes);
 const voteRoutes = require('./routes/votes');
 app.use('/api/votes', voteRoutes);
 const singersRoutes = require('./routes/singers');

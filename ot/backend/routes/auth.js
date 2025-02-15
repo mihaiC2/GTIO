@@ -2,20 +2,19 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Singer = require('../models/Singer');
 
 const router = express.Router();
 
 // Registro
 router.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
     
     try {
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ msg: 'This user already exists' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        user = new User({ email, password: hashedPassword });
+        user = new User({ username, email, password: hashedPassword });
         await user.save();
 
         res.status(201).json({ msg: 'User registered successfully' });
@@ -37,16 +36,6 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
-    } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
-    }
-});
-
-// All users
-router.get('/all', async (req, res) => {
-    try {
-        const users = await User.find();
-        res.json(users);
     } catch (err) {
         res.status(500).json({ msg: 'Error in the server' });
     }

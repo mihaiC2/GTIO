@@ -5,7 +5,7 @@ const Singer = require('../models/Singer');
 
 const router = express.Router();
 
-router.post('/vote',verifyToken, async (req, res) => {
+router.post('/vote', verifyToken, async (req, res) => {
     const { singerId} = req.body;
     const userId = req.user.userId;
     try {

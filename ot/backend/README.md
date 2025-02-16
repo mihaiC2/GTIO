@@ -1,3 +1,20 @@
+## Start Locally
+
+1. Navigate to the backend directory:  
+    ```sh
+   cd ot/backend
+    ```
+2. Install dependencies:
+    ```sh
+    npm install
+    ```
+3. Start the server:
+    ```sh
+    node server.js
+    ```
+
+## Docker
+
 ### Building and running your application
 
 When you're ready, start your application by running:

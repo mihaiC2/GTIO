@@ -36,7 +36,19 @@ For the effective management of our project, we need to choose a set of tools th
 ## Decision Outcome
 Chosen Options:
 
-1. Discord for internal communication and meetings
-2. Trello for sprint and task management
-3. GitHub for decision documentation and code repository
-4. Google Drive for internal document sharing
+1. Discord for internal communication and meetings because it enhances communication with voice and text capabilities.
+2. Trello for sprint and task management because it simplifies sprint planning and task tracking using an intuitive and visual-friendly Kanban board system instead of GitHub issues. 
+3. GitHub for decision documentation and code repository. It centralizes decision documentation and ensures proper version control for code and documentation. GitHub is widely used in the industry and it's very documented.
+4. Google Drive for internal document sharing, it facilitates easy access to shared documents and enables real-time collaboration.
+
+### Positive Consequences
+
+- Streamlined communication with Discord's voice and text features
+- Efficient task management with Trello's kanban boards
+- Centralized version control and documentation with GitHub
+- Easy document sharing and collaboration through Google Drive
+
+### Negative Consequences
+
+- Potential distractions from Discord's informal nature
+- Trello may become cluttered for large-scale project management

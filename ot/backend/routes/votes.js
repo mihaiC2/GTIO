@@ -31,7 +31,7 @@ router.post('/vote', verifyToken, async (req, res) => {
 });
 
 // Obtener el número de votos por cantante
-router.get('/:singerId', async (req, res) => {
+router.get('/votes/:singerId', async (req, res) => {
     const { singerId } = req.params;
 
     try {

@@ -3,6 +3,13 @@ const jwt = require('jsonwebtoken');
 exports.verifyToken = (req, res, next) => {
     const token = req.header('Authorization');
 
+    // Token de prueba para el ornitorrinco---------------------
+    if (token == 'Token ornitorrinco') {
+        req.user = {userId: '67b1222cec8f8300d739b1fe'};
+        return next();
+    }
+    // Token de prueba para el ornitorrinco ---------------------
+
     if (!token) return res.status(401).json({ msg: 'Access denied, no token provided' });
 
     try {

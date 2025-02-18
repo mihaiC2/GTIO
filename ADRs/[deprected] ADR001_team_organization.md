@@ -27,9 +27,9 @@ Chosen option: "Assign roles randomly", because it ensures fairness, prevents bi
 
 * Yasin - Team Leader
 * Nikol - Designer & Frontend Developer
-* Mihail - System responsible
-* Roberto - Backend Developer
-* Jazmin - Backend Developer
+* Mihail - Developer
+* Roberto - Developer
+* Jazmin - Developer
 
 ### Positive Consequences <!-- optional -->
 

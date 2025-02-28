@@ -74,7 +74,7 @@ const getUserByAuthId = async (authId) => {
     }
 }
 
-const updateUserByAuthId = async (authId, userData) => {
+const updateUserById = async (authId, userData) => {
     try {
         const { data, error } = await supabase
             .from('users')
@@ -88,4 +88,4 @@ const updateUserByAuthId = async (authId, userData) => {
     }
 }
 
-module.exports = { createUser, authLogin, getUserByAuthId, updateUserByAuthId };
+module.exports = { createUser, authLogin, getUserByAuthId, updateUserById };

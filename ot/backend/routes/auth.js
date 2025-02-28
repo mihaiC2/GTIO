@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, authLogin, updateUserByAuthId } = require('../models/User');
+const { createUser, authLogin, updateUserById } = require('../models/User');
 const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
@@ -48,7 +48,7 @@ router.put('/user', verifyToken, async (req, res) => {
     let { username } = req.body;
     try {
         let authId = req.user.id;
-        await updateUserByAuthId(authId, { username });
+        await updateUserById(authId, { username });
         res.status(200).json({ msg: 'User updated' });
     } catch (err) {
         res.status(500).json({ msg: 'Server error' });

@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -52,20 +53,6 @@ router.delete('/delete-account', async (req, res) => {
         if (!user) return res.status(404).json({ msg: 'User not found' });
 
         res.json({ msg: 'Account deleted successfully' });
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
-// Get user by email
-router.get('/user', async (req, res) => {
-    try {
-        const { email } = req.query;
-        const user = await User.findOne({ email });
-
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-
-        res.json(user);
     } catch (err) {
         res.status(500).json({ msg: 'Server error' });
     }

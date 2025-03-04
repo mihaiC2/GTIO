@@ -8,7 +8,7 @@ const router = express.Router();
 // curl -X POST http://localhost:5000/api/auth/register -H "Content-Type: application/json" -d "{\"username\": \"test\", \"email\": \"test@gmail.com\", \"password\": \"test\"}"
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
-    console.log(req.body);
+    
     try {
         // Insert user into Supabase
         let authId = await createUser(email, password, { username });

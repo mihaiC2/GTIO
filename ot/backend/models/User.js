@@ -4,11 +4,6 @@ const createUser = async (email, password, userData) => {
     try {
         const userId = await createAuthUser(email, password);
 
-        console.log({
-            id: userId,
-            email,
-            ...userData
-        })
         await createDbUser({
             id: userId,
             email,
@@ -37,7 +32,7 @@ const createAuthUser = async (email, password) => {
 const createDbUser = async (userData) => {
     try {
         const { data, error } = await supabase
-            .from('users')
+            .from('user')
             .insert(userData);
         if (error) throw error;
         return data;
@@ -62,7 +57,7 @@ const authLogin = async (email, password) => {
 const getUserByAuthId = async (authId) => {
     try {
         const { data, error } = await supabase
-            .from('users')
+            .from('user')
             .select('*')
             .eq('id', authId)
             .single();
@@ -77,7 +72,7 @@ const getUserByAuthId = async (authId) => {
 const updateUserById = async (authId, userData) => {
     try {
         const { data, error } = await supabase
-            .from('users')
+            .from('user')
             .update(userData)
             .eq('id', authId);
         console.log(data)

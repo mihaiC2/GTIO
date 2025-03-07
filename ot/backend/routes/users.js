@@ -27,23 +27,6 @@ router.put('/change-password', async (req, res) => {
     }
 });
 
-// Change username
-router.put('/change-username', async (req, res) => {
-    try {
-        const { email, newUsername } = req.body;
-        const user = await User.findOne({ email });
-
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-
-        user.username = newUsername;
-        await user.save();
-
-        res.json({ msg: 'Username updated successfully' });
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
 // Delete account
 router.delete('/delete-account', async (req, res) => {
     try {

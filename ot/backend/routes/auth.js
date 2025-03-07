@@ -12,7 +12,6 @@ router.post('/register', async (req, res) => {
     try {
         // Insert user into Supabase
         let authId = await createUser(email, password, { username });
-        console.log(authId);
 
         res.status(200).json({ msg: 'User registered successfully' });
     } catch (err) {

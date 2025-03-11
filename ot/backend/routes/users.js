@@ -5,7 +5,7 @@ const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// TODO: Verify token
+// TODO: NADA DE ESTO ESTÁ IMPLEMENTADO. ESTO ESTABA CON MONGODB
 
 // Change password
 router.put('/change-password', async (req, res) => {

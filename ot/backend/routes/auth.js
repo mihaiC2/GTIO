@@ -11,12 +11,11 @@ router.post('/register', async (req, res) => {
     
     try {
         // Insert user into Supabase
-        let authId = await createUser(email, password, { username });
+        let data = await createUser(email, password, { username });
 
-        res.status(200).json({ msg: 'User registered successfully' });
+        res.status(201).json({ msg: 'User registered successfully', user: data });
     } catch (err) {
-        console.error(err);
-        res.status(400).json({ msg: `Failed to sign up: ${err.message}` });
+        res.status(500).json({ msg: `Failed to sign up: ${err.message}` });
     }
 });
 
@@ -29,7 +28,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({ token: data.session.access_token});
     } catch (err) {
         console.error(err);
-        res.status(400).json({ msg: `Failed to sign up: ${err.message}` });
+        res.status(500).json({ msg: `Failed to sign in: ${err.message}` });
     }
 });
 

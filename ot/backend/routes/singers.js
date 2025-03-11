@@ -25,7 +25,7 @@ router.post('/add', verifyToken, async (req, res) => {
 
         res.status(201).json({ msg: 'Singer added successfully', singer: data });
     } catch (err) {
-        res.status(400).json({ msg: `Failed to add singer: ${err.message}` });
+        res.status(500).json({ msg: 'Error in the server', error: err.message });
     }
 });
 
@@ -34,7 +34,7 @@ router.get('/all', async (req, res) => {
     try {
         const singers = await getAllSingers();
 
-        res.json(singers);
+        res.status(200).json(singers);
     } catch (err) {
         res.status(500).json({ msg: 'Error in the server', error: err.message });
     }
@@ -45,9 +45,9 @@ router.get('/:id', async (req, res) => {
     try {
         const singer = await getSingerById(req.params.id);
 
-        res.json(singer);
+        res.status(200).json(singer);
     } catch (err) {
-        res.status(400).json({ msg: 'Error finding singer', error: err.message });
+        res.status(500).json({ msg: 'Error in the server', error: err.message });
     }
 });
 
@@ -69,9 +69,9 @@ router.put('/update/:id', verifyToken, async (req, res) => {
             active 
         });
 
-        res.json({ msg: 'Singer updated successfully', singer: updatedSinger });
+        res.status(200).json({ msg: 'Singer updated successfully', singer: updatedSinger });
     } catch (err) {
-        res.status(400).json({ msg: 'Error updating the singer', error: err.message });
+        res.status(500).json({ msg: 'Error in the server', error: err.message });
     }
 });
 
@@ -83,9 +83,9 @@ router.delete('/delete/:id', verifyToken, async (req, res) => {
     try {
         const data = await deleteSingerById(req.params.id);
 
-        res.json(data);
+        res.status(200).json(data);
     } catch (err) {
-        res.status(400).json({ msg: 'Error deleting singer', error: err.message });
+        res.status(500).json({ msg: 'Error in the server', error: err.message });
     }
 });
 

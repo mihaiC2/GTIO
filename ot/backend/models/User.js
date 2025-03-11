@@ -4,13 +4,13 @@ const createUser = async (email, password, userData) => {
     try {
         const userId = await createAuthUser(email, password);
 
-        await createDbUser({
+        let user = await createDbUser({
             id: userId,
             email,
             ...userData
         });
 
-        return userId;
+        return user;
     } catch (err) {
         throw err;
     }

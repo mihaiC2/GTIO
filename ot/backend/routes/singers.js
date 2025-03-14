@@ -1,95 +1,92 @@
 const express = require('express');
-const Singer = require('../models/Singer');
+const { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById } = require('../models/Singer');
+const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// TODO: Verify token
+// Add a new singer
+router.post('/add', verifyToken, async (req, res) => {
+    if (!req.user.admin) 
+        return res.status(403).json({ msg: 'Access denied: Admin privileges required' });
 
-router.post('/add', async (req, res) => {
-    const { name, description, age, image } = req.body;
+    const { first_name, last_name, stage_name, photo_url, bio, birth_date, active } = req.body;
 
     try {
-        const existingSinger = await Singer.findOne({ name });
-        if (existingSinger) {
-            return res.status(400).json({ msg: 'The singer already exists' });
-        }
-        const newSinger = new Singer({ name, description, age, image });
-        await newSinger.save();
+        // Insert new singer
+        const data = await createSinger({ 
+            first_name, 
+            last_name, 
+            stage_name, 
+            photo_url, 
+            bio, 
+            birth_date, 
+            active 
+        });
 
-        res.status(201).json({ msg: 'Singer added successfully', singer: newSinger });
+        res.status(201).json({ msg: 'Singer added successfully', singer: data });
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
+// Get all singers
 router.get('/all', async (req, res) => {
     try {
-        const singers = await Singer.find();
-        res.json(singers);
+        const singers = await getAllSingers();
+
+        res.status(200).json(singers);
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
-
-// Get singer by name
-// router.get('/get-by-name', async (req, res) => {
-//     const { name } = req.body;
-
-//     try {
-//         const singer = await Singer.findOne(name);
-//         if (!singer) {
-//             return res.status(404).json({ msg: 'Singer not found' });
-//         }
-//         res.json(singer);
-//     } catch (err) {
-//         res.status(500).json({ msg: 'Error in the server' });
-//     }
-// });
 
 // Get singer by ID
 router.get('/:id', async (req, res) => {
     try {
-        const singer = await Singer.findById(req.params.id);
-        if (!singer) {
-            return res.status(404).json({ msg: 'Singer not found' });
-        }
-        res.json(singer);
+        const singer = await getSingerById(req.params.id);
+
+        res.status(200).json(singer);
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
 // Update singer by ID
-router.put('/update/:id', async (req, res) => {
-    const { name, description, age, image } = req.body;
+router.put('/update/:id', verifyToken, async (req, res) => {
+    if (!req.user.admin) 
+        return res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+
+    const { first_name, last_name, stage_name, photo_url, bio, birth_date, active } = req.body;
 
     try {
-        const updatedSinger = await Singer.findByIdAndUpdate(
-            req.params.id,
-            { name, description, age, image },
-            { new: true }
-        );
-        if (!updatedSinger) {
-            return res.status(404).json({ msg: 'Singer not found' });
-        }
-        res.json({ msg: 'Singer updated successfully', singer: updatedSinger });
+        const updatedSinger = await updateSingerById(req.params.id, {
+            first_name, 
+            last_name, 
+            stage_name, 
+            photo_url, 
+            bio, 
+            birth_date, 
+            active 
+        });
+
+        res.status(200).json({ msg: 'Singer updated successfully', singer: updatedSinger });
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
 // Delete singer by ID
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', verifyToken, async (req, res) => {
+    if (!req.user.admin) 
+        return res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+
     try {
-        const deletedSinger = await Singer.findByIdAndDelete(req.params.id);
-        if (!deletedSinger) {
-            return res.status(404).json({ msg: 'Singer not found' });
-        }
-        res.json({ msg: 'Singer deleted successfully' });
+        const data = await deleteSingerById(req.params.id);
+
+        res.status(200).json(data);
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
-
 
 module.exports = router;

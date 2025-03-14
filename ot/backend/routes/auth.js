@@ -1,25 +1,21 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { createUser, authLogin, updateUserById } = require('../models/Auth');
+const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Registro
+// Register 
+// curl -X POST http://localhost:5000/api/auth/register -H "Content-Type: application/json" -d "{\"username\": \"test\", \"email\": \"test@gmail.com\", \"password\": \"test\"}"
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
     
     try {
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ msg: 'This user already exists' });
+        // Insert user into Supabase
+        let user_id = await createUser(email, password, { username });
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        user = new User({ username, email, password: hashedPassword });
-        await user.save();
-
-        res.status(201).json({ msg: 'User registered successfully' });
+        res.status(201).json({ msg: 'User registered successfully', user_id: user_id });
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
@@ -28,16 +24,30 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ msg: 'User not found' });
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: 'Incorrect password' });
-
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+        data = await authLogin(email, password);
+        res.status(200).json({ token: data.session.access_token});
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
+    }
+});
+
+// Get user
+router.get('/user', verifyToken, async (req, res) => {
+    try {
+        res.status(200).json(req.user);
+    } catch (err) {
+        res.status(err.status || 500).json({ msg: err.message });
+    }
+});
+
+// Update user
+router.put('/user', verifyToken, async (req, res) => {
+    let { username, avatar_url } = req.body;
+    try {
+        await updateUserById(req.user.id, { username, avatar_url });
+        res.status(200).json({ msg: 'User updated' });
+    } catch (err) {
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 

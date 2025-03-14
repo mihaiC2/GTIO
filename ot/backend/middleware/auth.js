@@ -1,27 +1,32 @@
-const jwt = require('jsonwebtoken');
+const { getUserByAuthId } = require('../models/Auth');
+const { supabase } = require('../utils/supabase');
 
-exports.verifyToken = (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
     const token = req.header('Authorization');
 
-    // Token de prueba para el ornitorrinco---------------------
-    if (token == 'Token ornitorrinco') {
-        req.user = {userId: '67b1222cec8f8300d739b1fe'};
-        return next();
-    }
+    // Token de prueba para el ornitorrinco--------------------- ESTO DE MOMENTO NO FUNCIONA
+    // if (token == 'Token ornitorrinco') {
+    //     req.user = {userId: '67b1222cec8f8300d739b1fe'};
+    //     return next();
+    // }
     // Token de prueba para el ornitorrinco ---------------------
 
     if (!token) return res.status(401).json({ msg: 'Access denied, no token provided' });
 
     try {
         const tokenParts = token.split(" ");
-        if (tokenParts.length !== 2 || tokenParts[0] !== "Token") {
-            return res.status(401).json({ msg: 'Token format is invalid' });
-        }
 
-        const decoded = jwt.verify(tokenParts[1], process.env.JWT_SECRET);
-        req.user = decoded; // Almacena userId en req.user
-        next();
+        let { data, error } = await supabase.auth.getUser(tokenParts[1]);
+
+        if (error) {
+            console.log(error)
+            return res.status(err.status || 500).json({ msg: err.message });
+        }
+        let authId = data.user.id;
+        let user = await getUserByAuthId(authId);
+        req.user = user;
+        return next();
     } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 };

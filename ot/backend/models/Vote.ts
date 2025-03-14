@@ -1,6 +1,6 @@
-const { supabase } = require('../utils/supabase');
+import { supabase } from "../utils/supabase";
 
-const createVote = async (voteData) => {
+export const createVote = async (voteData:any) => {
     try {
         const { data, error } = await supabase
             .from('vote')
@@ -18,7 +18,7 @@ const createVote = async (voteData) => {
     }
 }
 
-const getVotesBySinger = async (singerId) => {
+export const getVotesBySinger = async (singerId:string) => {
     try {
         const { data, error } = await supabase
             .from('vote')
@@ -33,7 +33,7 @@ const getVotesBySinger = async (singerId) => {
     }
 }
 
-const getSingerVoteStatsForGala = async (galaId) => {
+export const getSingerVoteStatsForGala = async (galaId:string) => {
     try {
         const { data: votes, error } = await supabase
             .from('vote')
@@ -43,10 +43,11 @@ const getSingerVoteStatsForGala = async (galaId) => {
         if (error) throw error;
 
         // Contar los votos por cantante manualmente
-        const data = votes.reduce((acc, vote) => {
+        const data = votes.reduce((acc : any, vote) => {
             const { singer_id, singer } = vote;
             if (!acc[singer_id]) {
-                acc[singer_id] = { singerId: singer_id, singerName: singer?.first_name, totalVotes: 0 };
+                //acc[singer_id] = { singerId: singer_id, singerName: singer?.first_name, totalVotes: 0 };
+                acc[singer_id] = { singerId: singer_id, singerName: singer[0]?.first_name, totalVotes: 0 };
             }
             acc[singer_id].totalVotes += 1;
             return acc;
@@ -61,4 +62,4 @@ const getSingerVoteStatsForGala = async (galaId) => {
 }
 
 
-module.exports = { createVote, getVotesBySinger, getSingerVoteStatsForGala };
+//module.exports = { createVote, getVotesBySinger, getSingerVoteStatsForGala };

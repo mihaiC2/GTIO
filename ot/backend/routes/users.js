@@ -1,83 +1,46 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const User = require('../models/User');
+const { verifyToken } = require('../middleware/auth');
+const { getAllUsers, deleteUser } = require('../models/Users');
 
 const router = express.Router();
 
-// TODO: Verify token
+router.get('/all', verifyToken, async (req, res) => {
+    if (!req.user.admin) 
+        return res.status(403).json({ msg: 'Access denied: Admin privileges required' });
 
-// Change password
-router.put('/change-password', async (req, res) => {
     try {
-        const { email, oldPassword, newPassword } = req.body;
-        const user = await User.findOne({ email });
+        const { orderBy = 'created_at', order = 'asc', username } = req.query;
+        let users = await getAllUsers();
 
-        if (!user) return res.status(404).json({ msg: 'User not found' });
+        // Filtrar por nombre si se especifica
+        if (username) {
+            users = users.filter(user => user.username.toLowerCase().includes(username.toLowerCase()));
+        }
+        // Ordenar resultados
+        users.sort((a, b) => {
+            if (order === 'asc') {
+                return a[orderBy] > b[orderBy] ? 1 : -1;
+            } else {
+                return a[orderBy] < b[orderBy] ? 1 : -1;
+            }
+        });
 
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
-        if (!isMatch) return res.status(400).json({ msg: 'Incorrect old password' });
-
-        user.password = await bcrypt.hash(newPassword, 10);
-        await user.save();
-
-        res.json({ msg: 'Password updated successfully' });
+        res.status(200).json(users);
     } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
-// Change username
-router.put('/change-username', async (req, res) => {
+router.delete('/delete-account/:id', verifyToken, async (req, res) => {
+    if (!req.user.admin) 
+        return res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+
+    const { id } = req.params;
     try {
-        const { email, newUsername } = req.body;
-        const user = await User.findOne({ email });
-
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-
-        user.username = newUsername;
-        await user.save();
-
-        res.json({ msg: 'Username updated successfully' });
+        await deleteUser(id);
+        res.status(200).json({ msg: 'User deleted successfully' });
     } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
-// Delete account
-router.delete('/delete-account', async (req, res) => {
-    try {
-        const { email } = req.body;
-        const user = await User.findOneAndDelete({ email });
-
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-
-        res.json({ msg: 'Account deleted successfully' });
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
-// Get user by email
-router.get('/user', async (req, res) => {
-    try {
-        const { email } = req.query;
-        const user = await User.findOne({ email });
-
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-
-        res.json(user);
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
-// All users
-router.get('/all', async (req, res) => {
-    try {
-        const users = await User.find();
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ msg: 'Error in the server' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 

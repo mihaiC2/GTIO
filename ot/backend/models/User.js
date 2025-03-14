@@ -75,9 +75,8 @@ const updateUserById = async (authId, userData) => {
             .from('user')
             .update(userData)
             .eq('id', authId);
-        console.log(data)
+            
         if (error) throw error;
-        return data;
     } catch (err) {
         throw err;
     }

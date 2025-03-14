@@ -42,9 +42,9 @@ router.get('/user', verifyToken, async (req, res) => {
 
 // Update user
 router.put('/user', verifyToken, async (req, res) => {
-    let { username } = req.body;
+    let { username, avatar_url } = req.body;
     try {
-        await updateUserById(req.user.id, { username });
+        await updateUserById(req.user.id, { username, avatar_url });
         res.status(200).json({ msg: 'User updated' });
     } catch (err) {
         res.status(err.status || 500).json({ msg: err.message });

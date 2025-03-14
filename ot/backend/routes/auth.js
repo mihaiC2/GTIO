@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, authLogin, updateUserById } = require('../models/Auth');
+const { createUser, authLogin, updateUserById, getUserByAuthId } = require('../models/Auth');
 const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
@@ -25,7 +25,7 @@ router.post('/login', async (req, res) => {
 
     try {
         data = await authLogin(email, password);
-        res.status(200).json({ token: data.session.access_token});
+        res.status(200).json({ token: data.session.access_token, user: await getUserByAuthId(data.user.id) });
     } catch (err) {
         res.status(err.status || 500).json({ msg: err.message });
     }

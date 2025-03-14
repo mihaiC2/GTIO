@@ -11,7 +11,8 @@ exports.verifyToken = async (req, res, next) => {
     // }
     // Token de prueba para el ornitorrinco ---------------------
 
-    if (!token) return res.status(401).json({ msg: 'Access denied, no token provided' });
+    if (!token) 
+        return res.status(401).json({ msg: 'Access denied, no token provided' });
 
     try {
         const tokenParts = token.split(" ");
@@ -19,8 +20,7 @@ exports.verifyToken = async (req, res, next) => {
         let { data, error } = await supabase.auth.getUser(tokenParts[1]);
 
         if (error) {
-            console.log(error)
-            return res.status(err.status || 500).json({ msg: err.message });
+            return res.status(error.status || 500).json({ msg: error.message });
         }
         let authId = data.user.id;
         let user = await getUserByAuthId(authId);

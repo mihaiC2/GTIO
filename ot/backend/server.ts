@@ -1,18 +1,21 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const authRoutes = require('./routes/auth');
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+import voteRoutes from './routes/votes';
+import singersRoutes from './routes/singers';
+
 app.use('/api/auth', authRoutes);
-const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
-const voteRoutes = require('./routes/votes');
 app.use('/api/votes', voteRoutes);
-const singersRoutes = require('./routes/singers');
 app.use('/api/singers', singersRoutes);
 
 const PORT = process.env.PORT || 5000;

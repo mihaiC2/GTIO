@@ -1,4 +1,4 @@
-const { getUserByAuthId } = require('../models/User');
+const { getUserByAuthId } = require('../models/Auth');
 const { supabase } = require('../utils/supabase');
 
 exports.verifyToken = async (req, res, next) => {

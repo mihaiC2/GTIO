@@ -2,7 +2,7 @@
 
 * Status: Accepted
 * Deciders: Mihail, Yasin, Roberto, Nikol, Jazmin
-* Date: 2025-03-07
+* Date: 2025-03-14
 
 ## Context and Problem Statement
 
@@ -31,6 +31,15 @@ The agile methodology we follow is similar to SCRUM but with some differences:
 - There are no roles as in SCRUM.
 - There is no retrospective meeting, simply when an RFI is finished we discuss the aspects in which we have failed to correct in the next RFI.
 - We do not work with Sprints, we work by RFIs.
+
+The methodology we will follow will have the following steps:
+1. Definition of requisites in the [Requisites](/Requisites/Requisites.md) file
+2. Definition of jobs to do in the [Trello page](https://trello.com/b/RMn4UuXP/proyecto-votacion)
+3. Job assignation for each designed use case
+4. Implementation on a new branch
+5. Once implemented, creation of a pull request with the changes
+6. After at least one revision, merge the branch to main branch (Everyone should review the code in order to be aware of the state of the project)
+7. Before merging, a set of tests should be run to ensure no previous funtionality has been broken. These tests will be authomatized with GitHub actions.
 
 ### Positive Consequences
 

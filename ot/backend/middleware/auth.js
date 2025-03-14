@@ -20,13 +20,13 @@ exports.verifyToken = async (req, res, next) => {
 
         if (error) {
             console.log(error)
-            return res.status(401).json({ msg: 'Unauthorized' });
+            return res.status(err.status || 500).json({ msg: err.message });
         }
         let authId = data.user.id;
         let user = await getUserByAuthId(authId);
         req.user = user;
         return next();
     } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 };

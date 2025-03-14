@@ -14,7 +14,7 @@ router.post('/vote', verifyToken, async (req, res) => {
 
         res.status(201).json({ msg: 'Voted successfully', vote: data });
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server', error: err.message });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
@@ -27,7 +27,7 @@ router.get('/votes/:singerId', async (req, res) => {
 
         res.status(200).json({ singerId, votes: data });
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server', error: err.message });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
@@ -58,7 +58,7 @@ router.get('/votes-by-gala/:galaId', async (req, res) => {
 
         res.status(200).json(voteCountBySinger);
     } catch (err) {
-        res.status(500).json({ msg: 'Error in the server', error: err.message });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 

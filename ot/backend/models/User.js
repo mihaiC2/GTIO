@@ -4,13 +4,13 @@ const createUser = async (email, password, userData) => {
     try {
         const userId = await createAuthUser(email, password);
 
-        let user = await createDbUser({
+        await createDbUser({
             id: userId,
             email,
             ...userData
         });
-
-        return user;
+        
+        return userId;
     } catch (err) {
         throw err;
     }
@@ -31,11 +31,11 @@ const createAuthUser = async (email, password) => {
 
 const createDbUser = async (userData) => {
     try {
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('user')
             .insert(userData);
+
         if (error) throw error;
-        return data;
     } catch (err) {
         throw err;
     }

@@ -1,6 +1,6 @@
-const { supabase } = require('../utils/supabase');
+import {supabase}  from "../utils/supabase";
 
-const createUser = async (email, password, userData) => {
+export const createUser = async (email: string, password: string, userData: object) => {
     try {
         const userId = await createAuthUser(email, password);
 
@@ -16,20 +16,24 @@ const createUser = async (email, password, userData) => {
     }
 }
 
-const createAuthUser = async (email, password) => {
+export const createAuthUser = async (email: string, password:string) => {
     try {
         const { data, error } = await supabase.auth.signUp({
             email,
             password
         });
         if (error) throw error;
-        return data.user.id;
+
+        if(data.user)
+            return data.user.id;
+        else
+            throw new Error('User not created');
     } catch (err) {
         throw err;
     }
 }
 
-const createDbUser = async (userData) => {
+export const createDbUser = async (userData: any) => {
     try {
         const { error } = await supabase
             .from('user')
@@ -41,7 +45,7 @@ const createDbUser = async (userData) => {
     }
 }
 
-const authLogin = async (email, password) => {
+export const authLogin = async (email:string, password:string) => {
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
@@ -54,7 +58,7 @@ const authLogin = async (email, password) => {
     }
 }
 
-const getUserByAuthId = async (authId) => {
+export const getUserByAuthId = async (authId: string) => {
     try {
         const { data, error } = await supabase
             .from('user')
@@ -69,7 +73,7 @@ const getUserByAuthId = async (authId) => {
     }
 }
 
-const updateUserById = async (authId, userData) => {
+export const updateUserById = async (authId: string, userData: any) => {
     try {
         const { data, error } = await supabase
             .from('user')
@@ -82,4 +86,4 @@ const updateUserById = async (authId, userData) => {
     }
 }
 
-module.exports = { createUser, authLogin, getUserByAuthId, updateUserById };
+//module.exports = { createUser, authLogin, getUserByAuthId, updateUserById };

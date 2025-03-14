@@ -10,7 +10,7 @@
     ```
 3. Start the server:
     ```sh
-    node server.js
+    npm run dev
     ```
 
 ## Docker

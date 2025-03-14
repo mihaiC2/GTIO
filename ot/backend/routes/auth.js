@@ -11,11 +11,11 @@ router.post('/register', async (req, res) => {
     
     try {
         // Insert user into Supabase
-        let data = await createUser(email, password, { username });
+        let user_id = await createUser(email, password, { username });
 
-        res.status(201).json({ msg: 'User registered successfully', user: data });
+        res.status(201).json({ msg: 'User registered successfully', user_id: user_id });
     } catch (err) {
-        res.status(500).json({ msg: `Failed to sign up: ${err.message}` });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
@@ -27,8 +27,7 @@ router.post('/login', async (req, res) => {
         data = await authLogin(email, password);
         res.status(200).json({ token: data.session.access_token});
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: `Failed to sign in: ${err.message}` });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
@@ -37,7 +36,7 @@ router.get('/user', verifyToken, async (req, res) => {
     try {
         res.status(200).json(req.user);
     } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
@@ -45,11 +44,10 @@ router.get('/user', verifyToken, async (req, res) => {
 router.put('/user', verifyToken, async (req, res) => {
     let { username } = req.body;
     try {
-        let authId = req.user.id;
-        await updateUserById(authId, { username });
+        await updateUserById(req.user.id, { username });
         res.status(200).json({ msg: 'User updated' });
     } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
+        res.status(err.status || 500).json({ msg: err.message });
     }
 });
 

@@ -63,4 +63,4 @@ router.get('/votes-by-gala/:galaId', async (req: Request, res: Response) => {
     }
 });
 
-module.exports = router;
+export default router;

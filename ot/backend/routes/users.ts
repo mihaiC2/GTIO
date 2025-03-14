@@ -45,4 +45,4 @@ router.delete('/delete-account/:id', verifyToken, async (req: Request, res: Resp
     }
 });
 
-module.exports = router;
+export default router;

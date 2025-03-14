@@ -1,6 +1,6 @@
-const { supabase } = require('../utils/supabase');
+import { supabase } from "../utils/supabase";
 
-const createSinger = async (singerData) => {
+export const createSinger = async (singerData: any) => {
     try {
         const { data, error } = await supabase
             .from('singer')
@@ -16,7 +16,7 @@ const createSinger = async (singerData) => {
     }
 }
 
-const getAllSingers = async () => {
+export const getAllSingers = async () => {
     try {
         const { data, error } = await supabase
             .from('singer')
@@ -30,7 +30,7 @@ const getAllSingers = async () => {
     }
 }
 
-const getSingerById = async (id) => {
+export const getSingerById = async (id:string) => {
     try {
         const { data, error } = await supabase
             .from('singer')
@@ -46,7 +46,7 @@ const getSingerById = async (id) => {
     }
 }
 
-const updateSingerById = async (id, singerData) => {
+export const updateSingerById = async (id:string, singerData:any) => {
     try {
         const { data, error } = await supabase
             .from('singer')
@@ -63,7 +63,7 @@ const updateSingerById = async (id, singerData) => {
     }
 }
 
-const deleteSingerById = async (id) => {
+export const deleteSingerById = async (id:string) => {
     try {
         const { data, error } = await supabase
             .from('singer')
@@ -78,9 +78,9 @@ const deleteSingerById = async (id) => {
         }
 
         return { success: true, msg: 'Singer deleted successfully', deletedSinger: data };
-    } catch (err) {
+    } catch (err: any) {
         return { success: false, msg: 'Error deleting singer', error: err.message };
     }
 }
 
-module.exports = { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById };
+//module.exports = { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById };

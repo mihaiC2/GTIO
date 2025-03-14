@@ -71,7 +71,7 @@ const getUserByAuthId = async (authId) => {
 
 const updateUserById = async (authId, userData) => {
     try {
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('user')
             .update(userData)
             .eq('id', authId);

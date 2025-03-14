@@ -1,6 +1,6 @@
-const { supabase } = require('../utils/supabase');
+import { supabase } from "../utils/supabase";
 
-const getAllUsers = async () => {
+export const getAllUsers = async () => {
     try {
         const { data, error } = await supabase
             .from('user')
@@ -14,7 +14,7 @@ const getAllUsers = async () => {
     }
 }
 
-const deleteUser = async (id) => {
+export const deleteUser = async (id:string) => {
     try {
         const { error } = await supabase
             .from('user')
@@ -27,4 +27,4 @@ const deleteUser = async (id) => {
     }
 }
 
-module.exports = { getAllUsers, deleteUser };
+//module.exports = { getAllUsers, deleteUser };

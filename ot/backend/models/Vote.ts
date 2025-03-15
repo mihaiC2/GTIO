@@ -82,13 +82,11 @@ export const getVotesCountBySinger = async (singers: any, authId: string) => {
         let userVotedSingerId: any = null;
         votes.forEach((vote: any) => {
             voteCounts[vote.singer_id]++;
-            // Check if this vote was cast by the current user
             if (vote.user_id === authId) {
                 userVotedSingerId = vote.singer_id;
             }
         });
         
-        // Map to final data structure with singer info
         const data = singers.map((singer: any) => ({
             id: singer.id,
             first_name: singer.first_name,

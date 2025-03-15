@@ -2,13 +2,16 @@
     "name": "voting-system",
     "private": true,
     "scripts": {
-        "install": "npm install --prefix auth-service && npm install --prefix user-service && npm install --prefix singer-service && npm install --prefix vote-service && npm install --prefix api-gateway && npm install --prefix shared",
-        "dev": "concurrently \"npm run dev --prefix auth-service\" \"npm run dev --prefix user-service\" \"npm run dev --prefix singer-service\" \"npm run dev --prefix vote-service\" \"npm run dev --prefix api-gateway\""
+        "clean": "find -name node_modules | xargs rm -rf && find -name dist | xargs rm -rf",
+        "install-dev": "concurrently \"npm install --prefix auth-service\" \"npm install --prefix user-service\" \"npm install --prefix singer-service\" \"npm install --prefix vote-service\"  \"npm install --prefix api-gateway\" \"npm install --prefix shared\"",
+        "ci": "concurrently \"npm ci --prefix auth-service\" \"npm ci --prefix user-service\" \"npm ci --prefix singer-service\" \"npm ci --prefix vote-service\" \"npm ci --prefix api-gateway\" \"npm ci --prefix shared\"",
+        "dev": "concurrently \"npm run dev --prefix auth-service\" \"npm run dev --prefix user-service\" \"npm run dev --prefix singer-service\" \"npm run dev --prefix vote-service\" \"npm run dev --prefix api-gateway\"",
+        "build": "concurrently \"npm run build --prefix auth-service\" \"npm run build --prefix user-service\" \"npm run build --prefix singer-service\" \"npm run build --prefix vote-service\" \"npm run build --prefix api-gateway\""
     },
     "devDependencies": {
-        "concurrently": "^7.0.0"
+        "ts-node-dev": "^2.0.0"
     },
     "dependencies": {
-        "ts-node-dev": "^2.0.0"
+        "concurrently": "^7.0.0"
     }
 }

@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyToken } from "../middleware/auth";
-import { createVote, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
+import { createVote, getVoteByUser, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
 import { Request, Response } from 'express';
 import { getActiveSingers } from "../models/Singer";
 
@@ -43,6 +43,19 @@ router.get('/votes-by-gala/:galaId', verifyToken, async (req: Request, res: Resp
 
         res.status(200).json(voteCountBySinger);
     } catch (err: any) {
+        res.status(err.status || 500).json({ msg: err.message });
+    }
+});
+
+router.get('/vote/:galaId', verifyToken, async (req: Request, res: Response) => {
+    let authId = req.body.user.id;
+    const { galaId } = req.params;
+    try {
+        let data = await getVoteByUser(authId, galaId);
+
+        res.status(200).json(data);
+    }
+    catch (err: any) {
         res.status(err.status || 500).json({ msg: err.message });
     }
 });

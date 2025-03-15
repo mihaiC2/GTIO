@@ -105,3 +105,20 @@ export const getVotesCountBySinger = async (singers: any, authId: string) => {
         throw err;
     }
 }
+
+export const getVoteByUser = async (authId: string, galaId: string) => {
+    try {
+        const { data, error } = await supabase
+            .from('vote')
+            .select('*')
+            .eq('user_id', authId)
+            .eq('gala_id', galaId)
+            .single();
+
+        if (error) throw error;
+
+        return data;
+    } catch (err) {
+        throw err;
+    }
+}

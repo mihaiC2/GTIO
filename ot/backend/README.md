@@ -8,11 +8,17 @@
     ```sh
     npm install
     ```
-3. Start the server:
+3. You may also need:
+    ```sh
+    npm install express
+    npm install --save-dev @types/express
+    npm install --save-dev @types/node ts-node nodemon @types/cors
+    npm install -g concurrently
+    ```
+4. Start the server:
     ```sh
     npm run dev
     ```
-
 ## Docker
 
 ### Building and running your application

@@ -1,7 +1,8 @@
 import express from "express";
 import { verifyToken } from "../middleware/auth";
-import { createVote, getVotesBySinger, getSingerVoteStatsForGala } from "../models/Vote";
+import { createVote, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
 import { Request, Response } from 'express';
+import { getActiveSingers } from "../models/Singer";
 
 const router = express.Router();
 
@@ -32,30 +33,13 @@ router.get('/votes/:singerId', async (req: Request, res: Response) => {
     }
 });
 
-// // Obtener todos los votos de un usuario
-// router.get('/user-votes', verifyToken, async (req, res) => {
-//     const userId = req.user.userId;
-
-//     try {
-//         const { data: userVotes, error } = await supabase
-//             .from('votes')
-//             .select('singer_id, singers(name)')
-//             .eq('user_id', userId);
-
-//         if (error) throw error;
-
-//         res.status(200).json(userVotes);
-//     } catch (err) {
-//         res.status(500).json({ msg: 'Error in the server', error: err.message });
-//     }
-// });
-
 // Obtener el número total de votos por cada cantante
-router.get('/votes-by-gala/:galaId', async (req: Request, res: Response) => {
+router.get('/votes-by-gala/:galaId', verifyToken, async (req: Request, res: Response) => {
+    let authId = req.body.user.id;
     const { galaId } = req.params;
     try {
-
-        let voteCountBySinger = await getSingerVoteStatsForGala(galaId);
+        let singers = await getActiveSingers(galaId);
+        let voteCountBySinger = await getVotesCountBySinger(singers, authId);
 
         res.status(200).json(voteCountBySinger);
     } catch (err: any) {

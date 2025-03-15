@@ -83,12 +83,12 @@ export const deleteSingerById = async (id:string) => {
     }
 }
 
-export const getActiveSingers = async (galaId:string) => {
+export const getSingersByGalaId = async (galaId:string) => {
     try {
         const { data: singers, error } = await supabase
             .from('singer')
             .select('*')
-            .eq('active', true);
+            .gte('last_gala_id', galaId);
 
         if (error) throw error;
 

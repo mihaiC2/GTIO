@@ -62,25 +62,30 @@ export const getSingerVoteStatsForGala = async (galaId:string) => {
 }
 
 
-export const getVotesCountBySinger = async (singers: any) => {
+export const getVotesCountBySinger = async (singers: any, authId: string) => {
     try {
+        // Get all votes for the singers
         const { data: votes, error } = await supabase
             .from('vote')
-            .select('singer_id', { count: 'exact' })
+            .select('singer_id, user_id')
             .in('singer_id', singers.map((singer: any) => singer.id));
 
         if (error) throw error;
 
-        // Mapear los resultados
-        // Initialize vote counts for all singers (including those with zero votes)
+        // Initialize vote counts for all singers
         const voteCounts: Record<string, number> = {};
         singers.forEach((singer: any) => {
             voteCounts[singer.id] = 0;
         });
         
-        // Count votes for singers who received them
+        // Count votes and find the user's vote
+        let userVotedSingerId: any = null;
         votes.forEach((vote: any) => {
             voteCounts[vote.singer_id]++;
+            // Check if this vote was cast by the current user
+            if (vote.user_id === authId) {
+                userVotedSingerId = vote.singer_id;
+            }
         });
         
         // Map to final data structure with singer info
@@ -92,7 +97,8 @@ export const getVotesCountBySinger = async (singers: any) => {
             photo_url: singer.photo_url,
             bio: singer.bio,
             birth_date: singer.birth_date,
-            totalVotes: voteCounts[singer.id]
+            totalVotes: voteCounts[singer.id],
+            isVotedByUser: singer.id === userVotedSingerId
         }));
 
         return data;

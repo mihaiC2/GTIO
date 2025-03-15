@@ -34,12 +34,11 @@ router.get('/votes/:singerId', async (req: Request, res: Response) => {
 });
 
 // Obtener el número total de votos por cada cantante
-router.get('/votes-by-gala/:galaId', verifyToken, async (req: Request, res: Response) => {
-    let authId = req.body.user.id;
+router.get('/votes-by-gala/:galaId', async (req: Request, res: Response) => {
     const { galaId } = req.params;
     try {
         let singers = await getSingersByGalaId(galaId);
-        let voteCountBySinger = await getVotesCountBySinger(singers, authId);
+        let voteCountBySinger = await getVotesCountBySinger(singers, galaId);
 
         res.status(200).json(voteCountBySinger);
     } catch (err: any) {
@@ -52,7 +51,11 @@ router.get('/vote/:galaId', verifyToken, async (req: Request, res: Response) => 
     const { galaId } = req.params;
     try {
         let data = await getVoteByUser(authId, galaId);
-
+        
+        if (!data) {
+            res.status(404).json({ msg: 'Vote not found' });
+            return;
+        }
         res.status(200).json(data);
     }
     catch (err: any) {

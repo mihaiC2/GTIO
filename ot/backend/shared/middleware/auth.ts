@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { getUserByAuthId } from '../models/Auth';
+import { getUserByAuthId } from '../../auth-service/src/models/Auth';
 import { supabase } from '../utils/supabase';
 
 export const verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

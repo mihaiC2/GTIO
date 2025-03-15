@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyToken } from "../middleware/auth";
+import { verifyToken } from "../../../shared/middleware/auth";
 import { createVote, getVotesBySinger, getSingerVoteStatsForGala } from "../models/Vote";
 import { Request, Response } from 'express';
 
@@ -8,7 +8,6 @@ const router = express.Router();
 router.post('/vote', verifyToken, async (req: Request, res: Response) => {
     const { singerId, galaId } = req.body;
     let authId = req.body.user.id;
-
     try {
 
         let data = await createVote({ singer_id: singerId, user_id: authId, gala_id: galaId });

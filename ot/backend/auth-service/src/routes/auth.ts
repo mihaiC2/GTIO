@@ -1,7 +1,6 @@
 import express from "express";
 import { createUser, authLogin, updateUserById, getUserByAuthId } from "../models/Auth";
-import { verifyToken } from "../middleware/auth";
-import { ExecException } from "child_process";
+import { verifyToken } from "../../../shared/middleware/auth";
 import { Request, Response } from 'express';
 
 const router = express.Router();

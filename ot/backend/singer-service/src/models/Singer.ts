@@ -1,4 +1,4 @@
-import { supabase } from "../utils/supabase";
+import {supabase}  from "../../../shared/utils/supabase";
 
 export const createSinger = async (singerData: any) => {
     try {

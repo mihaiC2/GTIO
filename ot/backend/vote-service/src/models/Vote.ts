@@ -1,4 +1,4 @@
-import { supabase } from "../utils/supabase";
+import {supabase}  from "../../../shared/utils/supabase";
 
 export const createVote = async (voteData:any) => {
     try {
@@ -43,7 +43,7 @@ export const getSingerVoteStatsForGala = async (galaId:string) => {
         if (error) throw error;
 
         // Contar los votos por cantante manualmente
-        const data = votes.reduce((acc : any, vote) => {
+        const data = votes.reduce((acc : any, vote: any) => {
             const { singer_id, singer } = vote;
             if (!acc[singer_id]) {
                 //acc[singer_id] = { singerId: singer_id, singerName: singer?.first_name, totalVotes: 0 };

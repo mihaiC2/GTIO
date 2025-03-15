@@ -1,2 +1,12 @@
 ot/backend/.env
 ot/backend/node_modules/
+ot/backend/api-gateway/node_modules/
+ot/backend/auth-service/node_modules/
+ot/backend/auth-service/.env
+ot/backend/singer-service/node_modules/
+ot/backend/singer-service/.env
+ot/backend/user-service/node_modules/
+ot/backend/user-service/.env
+ot/backend/vote-service/node_modules/
+ot/backend/vote-service/.env
+ot/backend/shared/node_modules/

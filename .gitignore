@@ -10,3 +10,4 @@ ot/backend/user-service/.env
 ot/backend/vote-service/node_modules/
 ot/backend/vote-service/.env
 ot/backend/shared/node_modules/
+ot/backend/shared/.env/

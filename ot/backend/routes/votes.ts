@@ -1,7 +1,8 @@
 import express from "express";
 import { verifyToken } from "../middleware/auth";
-import { createVote, getVotesBySinger, getSingerVoteStatsForGala } from "../models/Vote";
+import { createVote, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
 import { Request, Response } from 'express';
+import { getActiveSingers } from "../models/Singer";
 
 const router = express.Router();
 
@@ -54,8 +55,8 @@ router.get('/votes/:singerId', async (req: Request, res: Response) => {
 router.get('/votes-by-gala/:galaId', async (req: Request, res: Response) => {
     const { galaId } = req.params;
     try {
-
-        let voteCountBySinger = await getSingerVoteStatsForGala(galaId);
+        let singers = await getActiveSingers(galaId);
+        let voteCountBySinger = await getVotesCountBySinger(singers);
 
         res.status(200).json(voteCountBySinger);
     } catch (err: any) {

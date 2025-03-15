@@ -62,4 +62,42 @@ export const getSingerVoteStatsForGala = async (galaId:string) => {
 }
 
 
-//module.exports = { createVote, getVotesBySinger, getSingerVoteStatsForGala };
+export const getVotesCountBySinger = async (singers: any) => {
+    try {
+        const { data: votes, error } = await supabase
+            .from('vote')
+            .select('singer_id', { count: 'exact' })
+            .in('singer_id', singers.map((singer: any) => singer.id));
+
+        if (error) throw error;
+
+        // Mapear los resultados
+        // Initialize vote counts for all singers (including those with zero votes)
+        const voteCounts: Record<string, number> = {};
+        singers.forEach((singer: any) => {
+            voteCounts[singer.id] = 0;
+        });
+        
+        // Count votes for singers who received them
+        votes.forEach((vote: any) => {
+            voteCounts[vote.singer_id]++;
+        });
+        
+        // Map to final data structure with singer info
+        const data = singers.map((singer: any) => ({
+            id: singer.id,
+            first_name: singer.first_name,
+            last_name: singer.last_name,
+            stage_name: singer.stage_name,
+            photo_url: singer.photo_url,
+            bio: singer.bio,
+            birth_date: singer.birth_date,
+            totalVotes: voteCounts[singer.id]
+        }));
+
+        return data;
+    }
+    catch (err: any) {
+        throw err;
+    }
+}

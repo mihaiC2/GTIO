@@ -1,2 +1,3 @@
-ot/backend/.env
-ot/backend/node_modules/
+**/*.env
+**/node_modules
+**/dist

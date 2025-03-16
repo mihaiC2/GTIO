@@ -6,13 +6,16 @@
     ```
 2. Install dependencies:
     ```sh
-    npm install
+    npm ci
     ```
-3. Start the server:
+3. Install the microservices dependencies:
+    ```sh
+    npm run ci
+    ```
+4. Start the server:
     ```sh
     npm run dev
     ```
-
 ## Docker
 
 ### Building and running your application

@@ -2,12 +2,15 @@ import  express from "express";
 import { verifyToken } from "../../../shared/middleware/auth";
 import { getAllUsers, deleteUser } from  "../models/Users";
 import { Request, Response } from 'express';
+import { logRequest } from "../../../shared/utils/logger";
 
 const router = express.Router();
 
 router.get('/all', verifyToken, async (req: Request, res: Response) => {
-    if (!req.body.user.admin) 
+    if (!req.body.user.admin) {
+        logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+    }
 
     try {
         const orderBy = req.query.orderBy || 'created_at';
@@ -28,22 +31,27 @@ router.get('/all', verifyToken, async (req: Request, res: Response) => {
                 return a[orderBy as string] < b[orderBy as string] ? 1 : -1;
             }
         });
-
+        logRequest(req, `Retrieved all users successfully`);
         res.status(200).json(users);
     } catch (err: any) {
+        logRequest(req, `Failed to retrieve users: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
 
 router.delete('/delete-account/:id', verifyToken, async (req: Request, res: Response) => {
-    if (!req.body.user.admin) 
+    if (!req.body.user.admin){
+        logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+    }
 
     const { id } = req.params;
     try {
         await deleteUser(id);
+        logRequest(req, `User deleted successfully: ${id}`);
         res.status(200).json({ msg: 'User deleted successfully' });
     } catch (err: any) {
+        logRequest(req, `Failed to delete user: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });

@@ -1,3 +1,5 @@
 **/*.env
 **/node_modules
 **/dist
+ot/backend/logs/error.log
+ot/backend/logs/combined.log

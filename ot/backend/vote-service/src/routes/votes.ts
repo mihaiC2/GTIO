@@ -2,7 +2,7 @@ import express from "express";
 import { verifyToken } from "../../../shared/middleware/auth";
 import { createVote, getVoteByUser, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
 import { Request, Response } from 'express';
-import { getSingersByGalaId } from "../models/Singer";
+import { getSingersByGalaId } from "../../../singer-service/src/models/Singer";
 
 const router = express.Router();
 

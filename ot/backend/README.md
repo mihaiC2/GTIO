@@ -6,14 +6,11 @@
     ```
 2. Install dependencies:
     ```sh
-    npm install
+    npm ci
     ```
-3. You may also need:
+3. Install the microservices dependencies:
     ```sh
-    npm install express
-    npm install --save-dev @types/express
-    npm install --save-dev @types/node ts-node nodemon @types/cors
-    npm install -g concurrently
+    npm run ci
     ```
 4. Start the server:
     ```sh

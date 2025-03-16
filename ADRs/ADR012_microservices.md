@@ -20,29 +20,33 @@ Since the system is based on multiple interconnected functionalities, it has bee
 Below are the implemented microservices and their respective functionalities:
 
 1. Authentication Service:
-   Handles user registration and authentication
-   Provides secure login via JWT
-   Verifies and refreshes session tokens
+
+   - Handles user registration and authentication
+   - Provides secure login via JWT
+   - Verifies and refreshes session tokens
 
 2. User Management Service:
-   Manages user profiles
-   Allows modification and updating of personal data
-   Controls user status (active/inactive)
+
+   - Manages user profiles
+   - Allows modification and updating of personal data
+   - Controls user status (active/inactive)
 
 3. Singer Management Service:
-   Manages information about singers in the voting process
-   Allows the creation, modification, and deletion of singers
-   Queries details about each singer
+
+   - Manages information about singers in the voting process
+   - Allows the creation, modification, and deletion of singers
+   - Queries details about each singer
 
 4. Voting Service:
-   Manages the voting logic
-   Allows users to cast their votes
-   Ensures that each user can vote according to the established rules
+
+   - Manages the voting logic
+   - Allows users to cast their votes
+   - Ensures that each user can vote according to the established rules
 
 5. Roles and Permissions Service:
-   Manages user roles within the system
-   Controls access permissions to different functionalities
-   Allows dynamic assignment and modification of roles
+   - Manages user roles within the system
+   - Controls access permissions to different functionalities
+   - Allows dynamic assignment and modification of roles
 
 ## Decision Outcome
 

@@ -1,6 +1,7 @@
 import express from "express";
 import { createUser, authLogin, updateUserById, getUserByAuthId } from "../models/Auth";
 import { verifyToken } from "../../../shared/middleware/auth";
+import { logRequest } from "../../../shared/utils/logger";
 import { Request, Response } from 'express';
 
 const router = express.Router();
@@ -15,8 +16,11 @@ router.post('/register', async (req: Request, res: Response) => {
         // Insert user into Supabase
         let user_id = await createUser(email, password, { username });
 
+        logRequest(req, `User registered successfully: ${username} (ID: ${user_id})`);
+
         res.status(201).json({ msg: 'User registered successfully', user_id: user_id });
     } catch (err: any) {
+        logRequest(req, `Failed to register user: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
@@ -27,8 +31,14 @@ router.post('/login', async (req: Request, res: Response) => {
 
     try {
         const data = await authLogin(email, password);
-        res.status(200).json({ token: data.session.access_token, user: await getUserByAuthId(data.user.id) });
+        const user = await getUserByAuthId(data.user.id);
+
+        logRequest(req, `User logged in successfully: ${user.username} (ID: ${user.id})`);
+        
+        res.status(200).json({ token: data.session.access_token, user: user });
     } catch (err: any) {
+        logRequest(req, `Failed to login: ${err.message}`, 'error');
+
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
@@ -36,8 +46,10 @@ router.post('/login', async (req: Request, res: Response) => {
 // Get user
 router.get('/user', verifyToken, async (req: Request, res: Response) => {
     try {
+        logRequest(req, `User retrieved successfully: ${req.body.user.username} (ID: ${req.body.user.id})`);
         res.status(200).json(req.body.user);
     } catch (err: any) {
+        logRequest(req, `Failed to retrieve user: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
@@ -47,8 +59,10 @@ router.put('/user', verifyToken, async (req: Request, res: Response) => {
     let { username, avatar_url } = req.body;
     try {
         await updateUserById(req.body.user.id, { username, avatar_url });
+        logRequest(req, `User updated successfully: ${req.body.user.username} (ID: ${req.body.user.id})`);
         res.status(200).json({ msg: 'User updated' });
     } catch (err: any) {
+        logRequest(req, `Failed to update user: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });

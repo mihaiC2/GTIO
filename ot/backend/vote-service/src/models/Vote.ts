@@ -62,4 +62,56 @@ export const getSingerVoteStatsForGala = async (galaId:string) => {
 }
 
 
-//module.exports = { createVote, getVotesBySinger, getSingerVoteStatsForGala };
+export const getVotesCountBySinger = async (singers: any, gala_id: string) => {
+    try {
+        // Get all votes for the singers in the specific gala
+        const { data: votes, error } = await supabase
+            .from('vote')
+            .select('singer_id, user_id')
+            .in('singer_id', singers.map((singer: any) => singer.id))
+            .eq('gala_id', gala_id);
+
+        if (error) throw error;
+
+        // Initialize vote counts for all singers
+        const voteCounts: Record<string, number> = {};
+        singers.forEach((singer: any) => {
+            voteCounts[singer.id] = 0;
+        });
+        
+        votes.forEach((vote: any) => {
+            voteCounts[vote.singer_id]++;
+        });
+        
+        const data = singers.map((singer: any) => ({
+            id: singer.id,
+            first_name: singer.first_name,
+            last_name: singer.last_name,
+            stage_name: singer.stage_name,
+            photo_url: singer.photo_url,
+            bio: singer.bio,
+            birth_date: singer.birth_date,
+            totalVotes: voteCounts[singer.id]
+        }));
+
+        return data;
+    }
+    catch (err: any) {
+        throw err;
+    }
+}
+
+export const getVoteByUser = async (authId: string, galaId: string) => {
+    try {
+        const { data, error } = await supabase
+            .from('vote')
+            .select('*')
+            .eq('user_id', authId)
+            .eq('gala_id', galaId)
+            .single();
+
+        return data;
+    } catch (err) {
+        throw err;
+    }
+}

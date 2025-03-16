@@ -83,4 +83,17 @@ export const deleteSingerById = async (id:string) => {
     }
 }
 
-//module.exports = { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById };
+export const getSingersByGalaId = async (galaId:string) => {
+    try {
+        const { data: singers, error } = await supabase
+            .from('singer')
+            .select('*')
+            .gte('last_gala_id', galaId);
+
+        if (error) throw error;
+
+        return singers;
+    } catch (err) {
+        throw err;
+    }
+}

@@ -1,5 +1,5 @@
 import  express from "express";
-import { verifyToken } from "../middleware/auth";
+import { verifyToken } from "../../../shared/middleware/auth";
 import { getAllUsers, deleteUser } from  "../models/Users";
 import { Request, Response } from 'express';
 
@@ -10,7 +10,10 @@ router.get('/all', verifyToken, async (req: Request, res: Response) => {
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
 
     try {
-        const { orderBy = 'created_at', order = 'asc', username } = req.body.query;
+        const orderBy = req.query.orderBy || 'created_at';
+        const order = req.query.order || 'asc';
+        const username = req.query.username as string;
+
         let users = await getAllUsers();
 
         // Filtrar por nombre si se especifica
@@ -19,10 +22,10 @@ router.get('/all', verifyToken, async (req: Request, res: Response) => {
         }
         // Ordenar resultados
         users.sort((a, b) => {
-            if (order === 'asc') {
-                return a[orderBy] > b[orderBy] ? 1 : -1;
+            if (order.toString() === 'asc') {
+                return a[orderBy as string] > b[orderBy as string] ? 1 : -1;
             } else {
-                return a[orderBy] < b[orderBy] ? 1 : -1;
+                return a[orderBy as string] < b[orderBy as string] ? 1 : -1;
             }
         });
 

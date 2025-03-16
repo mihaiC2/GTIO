@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "main": "src/server.ts",
     "scripts": {
-        "dev": "nodemon --exec ts-node src/server.ts"
+        "dev": "nodemon --exec ts-node src/server.ts",
+        "build": "tsc --outDir dist"
     },
     "dependencies": {
         "cors": "^2.8.5",
@@ -14,7 +15,8 @@
     "devDependencies": {
         "@types/cors": "^2.8.17",
         "ts-node-dev": "^2.0.0",
-        "typescript": "^5.0.0"
+        "typescript": "^5.0.0",
+        "nodemon": "^3.1.9"
     },
     "compilerOptions": {
         "target": "es5",

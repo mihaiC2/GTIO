@@ -13,4 +13,6 @@ import voteRoutes from './routes/votes';
 app.use('/api/votes', voteRoutes);
 
 const PORT = process.env.PORT || 5003;
-app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));
+const server = app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));
+
+export {app, server};

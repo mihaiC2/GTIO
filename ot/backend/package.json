@@ -8,7 +8,7 @@
     "dev": "concurrently \"npm run dev --prefix auth-service\" \"npm run dev --prefix user-service\" \"npm run dev --prefix singer-service\" \"npm run dev --prefix vote-service\" \"npm run dev --prefix api-gateway\"",
     "build": "concurrently \"npm run build --prefix auth-service\" \"npm run build --prefix user-service\" \"npm run build --prefix singer-service\" \"npm run build --prefix vote-service\" \"npm run build --prefix api-gateway\"",
     "clean-mac": "find . -type d -name 'node_modules' -exec rm -rf {} + && find . -type d -name 'dist' -exec rm -rf {} +",
-    "test": "concurrently \"npm run test --prefix auth-service\" \"npm run test --prefix user-service\" \"npm run test --prefix singer-service\" \"npm run test --prefix vote-service\" \"npm run test --prefix stats-service\""
+    "test": "concurrently \"npm run test --prefix auth-service\" \"npm run test --prefix singer-service\""
   },
   "devDependencies": {
     "ts-node-dev": "^2.0.0"

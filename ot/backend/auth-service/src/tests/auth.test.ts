@@ -2,6 +2,10 @@ import request from 'supertest';
 import {app,server} from '../server';
 
 describe('Auth Service', () => {
+  afterAll(async () => {
+    await new Promise((resolve) => server.close(resolve));
+  });
+
   it('should return 200 on successful login', async () => {
     const res = await request(app)
       .post('/api/auth/login')
@@ -21,9 +25,4 @@ describe('Auth Service', () => {
     });
 });
 
-afterAll((done) => {
-  server.close(() => {
-    done();
-  });
-});
 

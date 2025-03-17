@@ -14,4 +14,6 @@ import singersRoutes from './routes/singers';
 app.use('/api/singers', singersRoutes);
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));
+const server = app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));
+
+export {app, server};

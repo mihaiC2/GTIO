@@ -11,7 +11,6 @@ describe('Auth Service', () => {
       expect(res.body).toHaveProperty('user');  
       expect(res.body.user).toHaveProperty('email', 'rgm745@gmail.com'); 
   });
-  // hacemos otro para esperar error:
 
     it('should return 400 on failed login', async () => {
         const res = await request(app)
@@ -23,5 +22,8 @@ describe('Auth Service', () => {
 });
 
 afterAll((done) => {
-  server.close(done);
+  server.close(() => {
+    done();
+  });
 });
+

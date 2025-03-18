@@ -5,5 +5,3 @@ export const supabase = createClient(
   process.env.SUPABASE_KEY || ""
 )
 
-module.exports = { supabase }
-

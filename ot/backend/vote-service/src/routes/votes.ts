@@ -3,6 +3,7 @@ import { verifyToken } from "../../../shared/middleware/auth";
 import { createVote, getVoteByUser, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
 import { Request, Response } from 'express';
 import { getSingersByGalaId } from "../../../singer-service/src/models/Singer";
+import { logRequest } from "../../../shared/utils/logger";
 
 const router = express.Router();
 
@@ -12,9 +13,10 @@ router.post('/vote', verifyToken, async (req: Request, res: Response) => {
     try {
 
         let data = await createVote({ singer_id: singerId, user_id: authId, gala_id: galaId });
-
+        logRequest(req, `Voted successfully: ${data.id}`);
         res.status(201).json({ msg: 'Voted successfully', vote: data });
     } catch (err: any) {
+        logRequest(req, `Failed to vote: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
@@ -25,9 +27,10 @@ router.get('/votes/:singerId', async (req: Request, res: Response) => {
 
     try {
         let data = await getVotesBySinger(singerId);
-
+        logRequest(req, `Retrieved votes successfully for singer: ${singerId}`);
         res.status(200).json({ singerId, votes: data });
     } catch (err: any) {
+        logRequest(req, `Failed to retrieve votes for singer: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
@@ -38,9 +41,10 @@ router.get('/votes-by-gala/:galaId', async (req: Request, res: Response) => {
     try {
         let singers = await getSingersByGalaId(galaId);
         let voteCountBySinger = await getVotesCountBySinger(singers, galaId);
-
+        logRequest(req, `Retrieved votes by gala successfully: ${galaId}`);
         res.status(200).json(voteCountBySinger);
     } catch (err: any) {
+        logRequest(req, `Failed to retrieve votes by gala: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });
@@ -52,12 +56,15 @@ router.get('/vote/:galaId', verifyToken, async (req: Request, res: Response) => 
         let data = await getVoteByUser(authId, galaId);
         
         if (!data) {
+            logRequest(req, `Vote not found`, 'error');
             res.status(404).json({ msg: 'Vote not found' });
             return;
         }
+        logRequest(req, `Retrieved vote successfully: ${data.id}`);
         res.status(200).json(data);
     }
     catch (err: any) {
+        logRequest(req, `Failed to retrieve vote: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
 });

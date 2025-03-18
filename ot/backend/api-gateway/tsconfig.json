@@ -1,14 +1,17 @@
 {
-    "compilerOptions": {
-      "target": "es6",                        // O es5 si prefieres ES5
-      "module": "commonjs",                    // Usamos CommonJS como el módulo
-      "strict": true,                          // Activar todas las comprobaciones estrictas
-      "esModuleInterop": true,                 // Permite la importación de módulos ES
-      "skipLibCheck": true,                    // Omite la comprobación de bibliotecas
-      "forceConsistentCasingInFileNames": true // Fuerza la coherencia en el nombre de los archivos
-    },
-    "include": [
-      "src/**/*" // Incluir todos los archivos TypeScript en la carpeta src
-    ]
-  }
-  
+  "compilerOptions": {
+    "target": "es6", // O es5 si prefieres ES5
+    "module": "commonjs", // Usamos CommonJS como el módulo
+    "strict": true, // Activar todas las comprobaciones estrictas
+    "esModuleInterop": true, // Permite la importación de módulos ES
+    "skipLibCheck": true, // Omite la comprobación de bibliotecas
+    "forceConsistentCasingInFileNames": true // Fuerza la coherencia en el nombre de los archivos
+  },
+  "include": [
+    "src/**/*" // Incluir todos los archivos TypeScript en la carpeta src
+  ],
+  "exclude": [
+    "**/test",
+    "**/tests"
+  ]
+}

@@ -1,5 +1,5 @@
 import express from "express";
-import { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById } from "../../../singer-service/src/models/Singer";
+import { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById } from "../models/Singer";
 import { verifyToken } from "../../../shared/middleware/auth";
 import { Request, Response } from 'express';
 import { logRequest } from "../../../shared/utils/logger";

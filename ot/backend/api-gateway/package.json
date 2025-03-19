@@ -4,14 +4,14 @@
     "main": "src/server.ts",
     "scripts": {
         "dev": "nodemon --exec ts-node src/server.ts",
-        "build": "tsc --outDir dist"
+        "build": "tsc --outDir dist",
+        "start": "node dist/server.js"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",
         "express": "^4.18.2",
-        "http-proxy-middleware": "^2.0.6",
-        "voting-system": "file:.."
+        "http-proxy-middleware": "^2.0.6"
     },
     "devDependencies": {
         "@types/cors": "^2.8.17",

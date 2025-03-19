@@ -7,16 +7,77 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+networks:
+  voting-network:
+    driver: bridge
 services:
-  server:
+  api-gw:
     build:
-      context: .
+      context: api-gateway
     environment:
       NODE_ENV: production
-      MONGO_URI: ${MONGO_URI}
-      JWT_SECRET: ${JWT_SECRET}
+    env_file:
+      - api-gateway/production.env
     ports:
-      - 5000:5000
+      - 4000:4000
+    networks:
+      - voting-network
+
+  auth-service:
+    build:
+      context: auth-service
+    environment:
+      NODE_ENV: production
+    env_file:
+      - auth-service/.env
+    expose:
+      - 5000
+    volumes:
+      - ./logs/auth-service:/usr/src/app/dist/logs
+    networks:
+      - voting-network
+
+  singer-service:
+    build:
+      context: singer-service
+    environment:
+      NODE_ENV: production
+    env_file:
+      - singer-service/.env
+    expose:
+      - 5001
+    volumes:
+      - ./logs/singer-service:/usr/src/app/dist/logs
+    networks:
+      - voting-network
+
+  user-service:
+    build:
+      context: user-service
+    environment:
+      NODE_ENV: production
+    env_file:
+      - user-service/.env
+    expose:
+      - 5002
+    volumes:
+      - ./logs/user-service:/usr/src/app/dist/logs
+    networks:
+      - voting-network
+
+  vote-service:
+    build:
+      context: vote-service
+    environment:
+      NODE_ENV: production
+    env_file:
+      - vote-service/.env
+    expose:
+      - 5003
+    volumes:
+      - ./logs/vote-service:/usr/src/app/dist/logs
+    networks:
+      - voting-network
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
@@ -50,4 +111,3 @@ services:
 # secrets:
 #   db-password:
 #     file: db/password.txt
-

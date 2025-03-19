@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-
 import { getUserByAuthId } from '../../auth-service/src/models/Auth';
 import { supabase } from '../utils/supabase';
 
@@ -40,7 +39,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
         req.body.user = user;
         next(); // Llamamos a next() para pasar al siguiente middleware
 
-    } catch (err : any) {
+    } catch (err: any) {
         console.error("Token Verification Error:", err);
         res.status(500).json({ msg: "Internal server error" });
     }

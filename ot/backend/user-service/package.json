@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "user-service",
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "voting-system": "file:.."
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

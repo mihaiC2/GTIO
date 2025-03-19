@@ -16,27 +16,34 @@
     ```sh
     npm run dev
     ```
+
 ## Docker
-
-### Building and running your application
-
-When you're ready, start your application by running:
-`docker compose up --build`.
-
-Your application will be available at http://localhost:5000.
-
-### Deploying your application to the cloud
-
-First, build your image, e.g.: `docker build -t myapp .`.
-If your cloud uses a different CPU architecture than your development
-machine (e.g., you are on a Mac M1 and your cloud provider is amd64),
-you'll want to build the image for that platform, e.g.:
-`docker build --platform=linux/amd64 -t myapp .`.
-
-Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
-
-Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
-docs for more detail on building and pushing.
-
-### References
-* [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
+1. Navigate to the backend directory:  
+    ```sh
+   cd ot/backend
+    ```
+2. Install dependencies:
+    ```sh
+    npm ci
+    ```
+3. Install the microservices dependencies:
+    ```sh
+    npm run ci
+    ```
+4. Build the distributables:
+    ```sh
+    npm run build
+    ```
+5. Configure your environment variables (See [.env_example](.env_example))
+6. In order for loggers to work properly create a log folder following this struture:<br>
+        logs<br>
+        ├── auth-service<br>
+        ├── singer-service<br>
+        ├── vote-service<br>
+        └── user-service<br>
+Don't forget to give it proper permises for the containers to be able to write in them!
+7. Start the application:
+    ```sh
+    docker compose up --build
+    ```
+Your application will be available at http://localhost:your_api_gateway_port.

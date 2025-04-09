@@ -1,4 +1,4 @@
-import {supabase}  from "../../../shared/utils/supabase";
+import {supabase}  from "../utils/supabase";
 
 export const createVote = async (voteData:any) => {
     try {
@@ -111,6 +111,21 @@ export const getVoteByUser = async (authId: string, galaId: string) => {
             .single();
 
         return data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+export const getSingersByGalaId = async (galaId:string) => {
+    try {
+        const { data: singers, error } = await supabase
+            .from('singer')
+            .select('*')
+            .gte('last_gala_id', galaId);
+
+        if (error) throw error;
+
+        return singers;
     } catch (err) {
         throw err;
     }

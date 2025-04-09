@@ -14,13 +14,11 @@ router.post('/register', async (req: Request, res: Response) => {
     try {
         // Insert user into Supabase
         let user_id = await createUser(email, password, { username });
-        console.log("Patata")
         const consumerRes = await fetch('http://kong:8001/consumers', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: email })
         });
-        console.log("metemete")
         if (!consumerRes.ok && consumerRes.status !== 409) {
             throw new Error(`Error al crear el consumer en Kong: ${consumerRes.statusText}`);
         }
@@ -28,7 +26,6 @@ router.post('/register', async (req: Request, res: Response) => {
         const keyRes = await fetch(`http://kong:8001/consumers/${email}/key-auth`, {
             method: 'POST'
         });
-        console.log("feldespato")
         if (!keyRes.ok) {
             throw new Error(`Error al generar la API key: ${keyRes.statusText}`);
         }
@@ -40,7 +37,6 @@ router.post('/register', async (req: Request, res: Response) => {
 
         res.status(201).json({ msg: 'User registered successfully', user_id: user_id, apiKey });
     } catch (err: any) {
-        console.log(err)
         logRequest(req, `Failed to register user: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }

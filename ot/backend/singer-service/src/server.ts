@@ -11,7 +11,7 @@ app.use(express.json());
 import singersRoutes from './routes/singers';
 
 
-app.use('/api/singers', singersRoutes);
+app.use('/', singersRoutes);
 
 const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));

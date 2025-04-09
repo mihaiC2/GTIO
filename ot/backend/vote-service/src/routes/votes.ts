@@ -1,9 +1,9 @@
 import express from "express";
-import { verifyToken } from "../../../shared/middleware/auth";
-import { createVote, getVoteByUser, getVotesBySinger, getVotesCountBySinger } from "../models/Vote";
+import { verifyToken } from "../middleware/auth";
+import { createVote, getVoteByUser, getVotesBySinger, getVotesCountBySinger, getSingersByGalaId } from "../models/Vote";
 import { Request, Response } from 'express';
-import { getSingersByGalaId } from "../../../singer-service/src/models/Singer";
-import { logRequest } from "../../../shared/utils/logger";
+// import { getSingersByGalaId } from "../../../singer-service/src/models/Singer";
+import { logRequest } from "../utils/logger";
 
 const router = express.Router();
 

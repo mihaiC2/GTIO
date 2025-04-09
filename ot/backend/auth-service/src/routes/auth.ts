@@ -1,25 +1,46 @@
 import express from "express";
 import { createUser, authLogin, updateUserById, getUserByAuthId } from "../models/Auth";
-import { verifyToken } from "../../../shared/middleware/auth";
-import { logRequest } from "../../../shared/utils/logger";
+import { verifyToken } from "../middleware/auth";
+import { logRequest } from "../utils/logger";
 import { Request, Response } from 'express';
 
 const router = express.Router();
 
 
 // Register 
-// curl -X POST http://localhost:5000/api/auth/register -H "Content-Type: application/json" -d "{\"username\": \"test\", \"email\": \"test@gmail.com\", \"password\": \"test\"}"
 router.post('/register', async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
     
     try {
         // Insert user into Supabase
         let user_id = await createUser(email, password, { username });
+        console.log("Patata")
+        const consumerRes = await fetch('http://kong:8001/consumers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: email })
+        });
+        console.log("metemete")
+        if (!consumerRes.ok && consumerRes.status !== 409) {
+            throw new Error(`Error al crear el consumer en Kong: ${consumerRes.statusText}`);
+        }
+
+        const keyRes = await fetch(`http://kong:8001/consumers/${email}/key-auth`, {
+            method: 'POST'
+        });
+        console.log("feldespato")
+        if (!keyRes.ok) {
+            throw new Error(`Error al generar la API key: ${keyRes.statusText}`);
+        }
+
+        const keyData = await keyRes.json();
+        const apiKey = keyData.key;
 
         logRequest(req, `User registered successfully: ${username} (ID: ${user_id})`);
 
-        res.status(201).json({ msg: 'User registered successfully', user_id: user_id });
+        res.status(201).json({ msg: 'User registered successfully', user_id: user_id, apiKey });
     } catch (err: any) {
+        console.log(err)
         logRequest(req, `Failed to register user: ${err.message}`, 'error');
         res.status(err.status || 500).json({ msg: err.message });
     }
@@ -33,9 +54,16 @@ router.post('/login', async (req: Request, res: Response) => {
         const data = await authLogin(email, password);
         const user = await getUserByAuthId(data.user.id);
 
+        const keyRes = await fetch(`http://kong:8001/consumers/${user.email}/key-auth`);
+        if (!keyRes.ok) {
+            throw new Error(`Error al obtener la API key: ${keyRes.statusText}`);
+        }
+        const keyData = await keyRes.json();
+        const apiKey = keyData.data?.[0]?.key;
+
         logRequest(req, `User logged in successfully: ${user.username} (ID: ${user.id})`);
         
-        res.status(200).json({ token: data.session.access_token, user: user });
+        res.status(200).json({ token: data.session.access_token, user: user, apiKey });
     } catch (err: any) {
         logRequest(req, `Failed to login: ${err.message}`, 'error');
 

@@ -1,8 +1,8 @@
-import express from "express";
+import express from 'express';
 import { createSinger, getAllSingers, getSingerById, updateSingerById, deleteSingerById } from "../models/Singer";
-import { verifyToken } from "../../../shared/middleware/auth";
+import { verifyToken } from "../middleware/auth";
 import { Request, Response } from 'express';
-import { logRequest } from "../../../shared/utils/logger";
+import { logRequest } from "../utils/logger";
 
 const router = express.Router();
 

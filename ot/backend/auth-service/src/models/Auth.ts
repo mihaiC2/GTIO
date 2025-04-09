@@ -1,4 +1,4 @@
-import {supabase}  from "../../../shared/utils/supabase";
+import {supabase}  from "../utils/supabase";
 export const createUser = async (email: string, password: string, userData: object) => {
     try {
         const userId = await createAuthUser(email, password);

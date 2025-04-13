@@ -84,5 +84,3 @@ export const updateUserById = async (authId: string, userData: any) => {
         throw err;
     }
 }
-
-//module.exports = { createUser, authLogin, getUserByAuthId, updateUserById };

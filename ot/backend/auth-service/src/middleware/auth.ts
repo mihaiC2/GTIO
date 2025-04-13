@@ -37,11 +37,10 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
         }
 
         req.body.user = user;
-        next(); // Llamamos a next() para pasar al siguiente middleware
+        next();
 
     } catch (err: any) {
         console.error("Token Verification Error:", err);
         res.status(500).json({ msg: "Internal server error" });
     }
 };
-module.exports = { verifyToken }; 

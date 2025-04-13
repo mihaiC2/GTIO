@@ -38,10 +38,11 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
         req.body.user = user;
         next();
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Token Verification Error:", err);
         res.status(500).json({ msg: "Internal server error" });
     }
+    
 };
 
 const getUserByAuthId = async (authId: string) => {

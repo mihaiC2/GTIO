@@ -1,6 +1,6 @@
 import {supabase}  from "../utils/supabase";
 
-export const createVote = async (voteData:any) => {
+export const createVote = async (voteData: object) => {
     try {
         const { data, error } = await supabase
             .from('vote')
@@ -42,11 +42,9 @@ export const getSingerVoteStatsForGala = async (galaId:string) => {
 
         if (error) throw error;
 
-        // Contar los votos por cantante manualmente
         const data = votes.reduce((acc : any, vote: any) => {
             const { singer_id, singer } = vote;
             if (!acc[singer_id]) {
-                //acc[singer_id] = { singerId: singer_id, singerName: singer?.first_name, totalVotes: 0 };
                 acc[singer_id] = { singerId: singer_id, singerName: singer[0]?.first_name, totalVotes: 0 };
             }
             acc[singer_id].totalVotes += 1;
@@ -62,41 +60,48 @@ export const getSingerVoteStatsForGala = async (galaId:string) => {
 }
 
 
-export const getVotesCountBySinger = async (singers: any, gala_id: string) => {
+export const getVotesCountBySinger = async (singers: object[], gala_id: string) => {
     try {
         // Get all votes for the singers in the specific gala
         const { data: votes, error } = await supabase
             .from('vote')
             .select('singer_id, user_id')
-            .in('singer_id', singers.map((singer: any) => singer.id))
+            .in('singer_id', singers.map((singer: any) => (singer as Record<string, any>).id))
             .eq('gala_id', gala_id);
 
         if (error) throw error;
 
         // Initialize vote counts for all singers
         const voteCounts: Record<string, number> = {};
-        singers.forEach((singer: any) => {
-            voteCounts[singer.id] = 0;
+        singers.forEach((singer) => {
+            const singerId = (singer as Record<string, unknown>)['id'] as string;
+            voteCounts[singerId] = 0;
         });
         
-        votes.forEach((vote: any) => {
-            voteCounts[vote.singer_id]++;
+        votes.forEach((vote) => {
+            const singerId = (vote as Record<string, unknown>)['singer_id'] as string;
+            voteCounts[singerId]++;
         });
         
-        const data = singers.map((singer: any) => ({
-            id: singer.id,
-            first_name: singer.first_name,
-            last_name: singer.last_name,
-            stage_name: singer.stage_name,
-            photo_url: singer.photo_url,
-            bio: singer.bio,
-            birth_date: singer.birth_date,
-            totalVotes: voteCounts[singer.id]
-        }));
+        const data = singers.map((singer) => {
+            const s = singer as Record<string, unknown>;
+            const singerId = s['id'] as string;
+
+            return {
+                id: singerId,
+                first_name: s['first_name'],
+                last_name: s['last_name'],
+                stage_name: s['stage_name'],
+                photo_url: s['photo_url'],
+                bio: s['bio'],
+                birth_date: s['birth_date'],
+                totalVotes: voteCounts[singerId],   
+            };
+        });
 
         return data;
     }
-    catch (err: any) {
+    catch (err) {
         throw err;
     }
 }

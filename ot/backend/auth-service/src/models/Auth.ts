@@ -1,4 +1,5 @@
 import {supabase}  from "../utils/supabase";
+
 export const createUser = async (email: string, password: string, userData: object) => {
     try {
         const userId = await createAuthUser(email, password);
@@ -14,6 +15,7 @@ export const createUser = async (email: string, password: string, userData: obje
         throw err;
     }
 }
+
 
 export const createAuthUser = async (email: string, password:string) => {
     try {
@@ -32,7 +34,7 @@ export const createAuthUser = async (email: string, password:string) => {
     }
 }
 
-export const createDbUser = async (userData: any) => {
+export const createDbUser = async (userData: object) => {
     try {
         const { error } = await supabase
             .from('user')
@@ -72,7 +74,7 @@ export const getUserByAuthId = async (authId: string) => {
     }
 }
 
-export const updateUserById = async (authId: string, userData: any) => {
+export const updateUserById = async (authId: string, userData: object) => {
     try {
         const { error } = await supabase
             .from('user')

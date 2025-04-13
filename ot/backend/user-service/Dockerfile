@@ -7,5 +7,7 @@ RUN npm install --omit=dev
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 5002
 CMD ["npm", "start"]

@@ -36,9 +36,15 @@ router.post('/register', async (req: Request, res: Response) => {
         logRequest(req, `User registered successfully: ${username} (ID: ${user_id})`);
 
         res.status(201).json({ msg: 'User registered successfully', user_id: user_id, apiKey });
-    } catch (err: any) {
-        logRequest(req, `Failed to register user: ${err.message}`, 'error');
-        res.status(err.status || 500).json({ msg: err.message });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+
+            logRequest(req, `Failed to register user: ${err.message}`, 'error');
+            res.status((err as any).status || 500).json({ msg: err.message });
+        } else {
+            logRequest(req, `Failed to register user: ${err}`, 'error');
+            res.status(500).json({ msg: 'Internal server error' });
+        }
     }
 });
 
@@ -63,10 +69,14 @@ router.post('/login', async (req: Request, res: Response) => {
         logRequest(req, `User logged in successfully: ${user.username} (ID: ${user.id})`);
         
         res.status(200).json({ token: data.session.access_token, user: user, apiKey });
-    } catch (err: any) {
-        logRequest(req, `Failed to login: ${err.message}`, 'error');
-
-        res.status(err.status || 500).json({ msg: err.message });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            logRequest(req, `Failed to login user: ${err.message}`, 'error');
+            res.status((err as any).status || 500).json({ msg: err.message });
+        } else {
+            logRequest(req, `Failed to login user: ${err}`, 'error');
+            res.status(500).json({ msg: 'Internal server error' });
+        }
     }
 });
 
@@ -75,9 +85,15 @@ router.get('/user', verifyToken, async (req: Request, res: Response) => {
     try {
         logRequest(req, `User retrieved successfully: ${req.body.user.username} (ID: ${req.body.user.id})`);
         res.status(200).json(req.body.user);
-    } catch (err: any) {
-        logRequest(req, `Failed to retrieve user: ${err.message}`, 'error');
-        res.status(err.status || 500).json({ msg: err.message });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            logRequest(req, `Failed to retrieve user: ${err.message}`, 'error');
+            res.status((err as any).status || 500).json({ msg: err.message });
+        }
+        else {
+            logRequest(req, `Failed to retrieve user: ${err}`, 'error');
+            res.status(500).json({ msg: 'Internal server error' });
+        }    
     }
 });
 
@@ -88,9 +104,15 @@ router.put('/user', verifyToken, async (req: Request, res: Response) => {
         await updateUserById(req.body.user.id, { username, avatar_url });
         logRequest(req, `User updated successfully: ${req.body.user.username} (ID: ${req.body.user.id})`);
         res.status(200).json({ msg: 'User updated' });
-    } catch (err: any) {
-        logRequest(req, `Failed to update user: ${err.message}`, 'error');
-        res.status(err.status || 500).json({ msg: err.message });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            logRequest(req, `Failed to update user: ${err.message}`, 'error');
+            res.status((err as any).status || 500).json({ msg: err.message });
+        }
+        else {  
+            logRequest(req, `Failed to update user: ${err}`, 'error');
+            res.status(500).json({ msg: 'Internal server error' });
+        }
     }
 });
 

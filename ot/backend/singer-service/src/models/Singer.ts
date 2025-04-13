@@ -1,6 +1,6 @@
 import {supabase}  from "../utils/supabase";
 
-export const createSinger = async (singerData: any) => {
+export const createSinger = async (singerData: object) => {
     try {
         const { data, error } = await supabase
             .from('singer')
@@ -78,8 +78,13 @@ export const deleteSingerById = async (id:string) => {
         }
 
         return { success: true, msg: 'Singer deleted successfully', deletedSinger: data };
-    } catch (err: any) {
-        return { success: false, msg: 'Error deleting singer', error: err.message };
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return { success: false, msg: 'Error deleting singer', error: err.message };
+        } else {
+            return { success: false, msg: 'Error deleting singer', error: err};
+        }
+        
     }
 }
 

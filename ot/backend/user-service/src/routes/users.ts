@@ -34,9 +34,14 @@ router.get('/all', verifyToken, async (req: Request, res: Response) => {
         });
         logRequest(req, `Retrieved all users successfully`);
         res.status(200).json(users);
-    } catch (err: any) {
-        logRequest(req, `Failed to retrieve users: ${err.message}`, 'error');
-        res.status(err.status || 500).json({ msg: err.message });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            logRequest(req, `Failed to retrieve users: ${err.message}`, 'error');
+            res.status((err as any).status || 500).json({ msg: err.message });
+        } else {
+            logRequest(req, `Failed to retrieve users: ${err}`, 'error');
+            res.status(500).json({ msg: 'Internal server error' });
+        }
     }
 });
 
@@ -52,9 +57,15 @@ router.delete('/delete-account/:id', verifyToken, async (req: Request, res: Resp
         await deleteUser(id);
         logRequest(req, `User deleted successfully: ${id}`);
         res.status(200).json({ msg: 'User deleted successfully' });
-    } catch (err: any) {
-        logRequest(req, `Failed to delete user: ${err.message}`, 'error');
-        res.status(err.status || 500).json({ msg: err.message });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            logRequest(req, `Failed to delete user: ${err.message}`, 'error');
+            res.status((err as any).status || 500).json({ msg: err.message });
+        }
+        else {
+            logRequest(req, `Failed to delete user: ${err}`, 'error');
+            res.status(500).json({ msg: 'Internal server error' });
+        }
     }
 });
 

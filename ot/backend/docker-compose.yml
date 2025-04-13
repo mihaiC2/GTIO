@@ -43,7 +43,7 @@ services:
     command: >
       sh -c "kong migrations bootstrap && kong start"
     ports:
-      - "8000:8000"  # Proxy (consumidores)
+      - "8000:8000"
       - "8001:8001"  # Admin API
     networks:
       - default
@@ -52,11 +52,11 @@ services:
     image: pantsel/konga:latest
     container_name: konga
     environment:
-      - "KONGA_HOST=konga:1337"    # Dirección de Konga
-      - "KONGA_PORT=1337"          # Puerto para acceder a la interfaz
-      - "KONG_ADMIN_URL=http://kong:8001"  # Dirección del Admin API de Kong
+      - "KONGA_HOST=konga:1337"
+      - "KONGA_PORT=1337"
+      - "KONG_ADMIN_URL=http://kong:8001"
     ports:
-      - "1337:1337"  # Puerto para acceder a la interfaz de Konga
+      - "1337:1337"
     networks:
       - default
     depends_on:
@@ -93,5 +93,3 @@ services:
       - "5003:5003"
     networks:
       - default
-
-  

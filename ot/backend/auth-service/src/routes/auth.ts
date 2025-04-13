@@ -14,7 +14,7 @@ router.post('/register', async (req: Request, res: Response) => {
     try {
         // Insert user into Supabase
         let user_id = await createUser(email, password, { username });
-        const consumerRes = await fetch('http://kong:8001/consumers', {
+        const consumerRes = await fetch(`${process.env.KONG_ADMIN_URL}/consumers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: email })
@@ -23,7 +23,7 @@ router.post('/register', async (req: Request, res: Response) => {
             throw new Error(`Error al crear el consumer en Kong: ${consumerRes.statusText}`);
         }
 
-        const keyRes = await fetch(`http://kong:8001/consumers/${email}/key-auth`, {
+        const keyRes = await fetch(`${process.env.KONG_ADMIN_URL}/consumers/${email}/key-auth`, {
             method: 'POST'
         });
         if (!keyRes.ok) {
@@ -50,7 +50,7 @@ router.post('/login', async (req: Request, res: Response) => {
         const data = await authLogin(email, password);
         const user = await getUserByAuthId(data.user.id);
 
-        const keyRes = await fetch(`http://kong:8001/consumers/${user.email}/key-auth`);
+        const keyRes = await fetch(`${process.env.KONG_ADMIN_URL}/consumers/${user.email}/key-auth`);
         if (!keyRes.ok) {
             throw new Error(`Error al obtener la API key: ${keyRes.statusText}`);
         }

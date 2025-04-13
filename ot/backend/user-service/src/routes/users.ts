@@ -10,6 +10,7 @@ router.get('/all', verifyToken, async (req: Request, res: Response) => {
     if (!req.body.user.admin) {
         logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+        return;
     }
 
     try {
@@ -43,6 +44,7 @@ router.delete('/delete-account/:id', verifyToken, async (req: Request, res: Resp
     if (!req.body.user.admin){
         logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+        return;
     }
 
     const { id } = req.params;

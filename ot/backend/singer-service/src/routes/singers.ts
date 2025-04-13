@@ -11,6 +11,7 @@ router.post('/add', verifyToken, async (req: Request, res: Response) => {
     if (!req.body.user.admin) {
         logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+        return;
     }
     const { first_name, last_name, stage_name, photo_url, bio, birth_date, active } = req.body;
     try {
@@ -61,6 +62,7 @@ router.put('/update/:id', verifyToken, async (req: Request, res: Response) => {
     if (!req.body.user.admin) {
         logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+        return;
     }
 
     const { first_name, last_name, stage_name, photo_url, bio, birth_date, active } = req.body;
@@ -88,6 +90,7 @@ router.delete('/delete/:id', verifyToken, async (req: Request, res: Response) =>
     if (!req.body.user.admin) {
         logRequest(req, `Access denied: Admin privileges required`, 'error');
         res.status(403).json({ msg: 'Access denied: Admin privileges required' });
+        return;
     }
 
     try {

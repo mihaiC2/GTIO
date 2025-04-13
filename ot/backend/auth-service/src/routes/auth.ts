@@ -55,6 +55,9 @@ router.post('/login', async (req: Request, res: Response) => {
             throw new Error(`Error al obtener la API key: ${keyRes.statusText}`);
         }
         const keyData = await keyRes.json();
+        if (!keyData.data || keyData.data.length === 0) {
+            throw new Error(`No API key found for user: ${user.email}`);
+        }
         const apiKey = keyData.data?.[0]?.key;
 
         logRequest(req, `User logged in successfully: ${user.username} (ID: ${user.id})`);

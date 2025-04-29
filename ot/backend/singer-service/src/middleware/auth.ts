@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { getUserByAuthId } from '../../auth-service/src/models/Auth';
 import { supabase } from '../utils/supabase';
 
 export const verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -37,11 +36,25 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
         }
 
         req.body.user = user;
-        next(); // Llamamos a next() para pasar al siguiente middleware
+        next();
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Token Verification Error:", err);
         res.status(500).json({ msg: "Internal server error" });
     }
 };
-module.exports = { verifyToken }; 
+
+const getUserByAuthId = async (authId: string) => {
+    try {
+        const { data, error } = await supabase
+            .from('user')
+            .select('*')
+            .eq('id', authId)
+            .single();
+            
+        if (error) throw error;
+        return data;
+    } catch (err) {
+        throw err;
+    }
+}

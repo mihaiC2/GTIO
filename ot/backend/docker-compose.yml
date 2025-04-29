@@ -1,0 +1,95 @@
+networks:
+  default:
+    external: true
+    name: kong-net
+
+volumes:
+  kong-db-data:
+
+services:
+  kong-database:
+    image: postgres:13
+    container_name: kong-database
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - kong-db-data:/var/lib/postgresql/data
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  kong:
+    image: kong:3.6
+    container_name: kong
+    depends_on:
+      kong-database:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: ${KONG_DATABASE}
+      KONG_PG_HOST: ${KONG_PG_HOST}
+      KONG_PG_USER: ${KONG_PG_USER}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
+      KONG_PROXY_ACCESS_LOG: ${KONG_PROXY_ACCESS_LOG}
+      KONG_ADMIN_ACCESS_LOG: ${KONG_ADMIN_ACCESS_LOG}
+      KONG_PROXY_ERROR_LOG: ${KONG_PROXY_ERROR_LOG}
+      KONG_ADMIN_ERROR_LOG: ${KONG_ADMIN_ERROR_LOG}
+    command: >
+      sh -c "kong migrations bootstrap && kong start"
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    networks:
+      - default
+
+  konga:
+    image: pantsel/konga:latest
+    container_name: konga
+    environment:
+      - "KONGA_HOST=${KONGA_HOST}"
+      - "KONGA_PORT=${KONGA_PORT}"
+      - "KONG_ADMIN_URL=${KONG_ADMIN_URL}"
+    ports:
+      - "1337:1337"
+    networks:
+      - default
+    depends_on:
+      - kong
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5000:5000"
+    networks:
+      - default
+
+  singer-service:
+    build: ./singer-service
+    container_name: singer-service
+    ports:
+      - "5001:5001"
+    networks:
+      - default
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "5002:5002"
+    networks:
+      - default
+
+  vote-service:
+    build: ./vote-service
+    container_name: vote-service
+    ports:
+      - "5003:5003"
+    networks:
+      - default

@@ -2,7 +2,7 @@
 set -e # si falla algo el workflow se detiene
 
 # Lista de carpetas de microservicios
-services=("auth-service" "user-service" "singer-service" "vote-service")
+services=("auth-service" "user-service" "vote-service")
 
 for service in "${services[@]}"; do
   cd ..

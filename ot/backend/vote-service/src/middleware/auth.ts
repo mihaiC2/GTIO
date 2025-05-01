@@ -56,12 +56,11 @@ const getUserByAuthId = async (authId: string) => {
       .single();
 
     if (error) {
-      // Si es que NO existe el usuario → devolvemos null (NO lanzamos error)
+      // Si es que NO existe el usuario
       if (error.message === "User not found") {
         return null;
       }
 
-      // Si es otro error más grave → sí lanzamos error
       throw error;
     }
     return data;

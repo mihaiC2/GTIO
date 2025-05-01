@@ -20,10 +20,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd ot/backend/
+          cd ot/backend/scripts/
           sh start-microservices.sh
 
       - name: Run tests
         run: |
-          cd ot/backend/
+          cd ot/backend/scripts/
           sh tests.sh

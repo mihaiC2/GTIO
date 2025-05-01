@@ -8,12 +8,12 @@ import {
   mockGte,
 } from "../tests/__mocks__/@supabase/supabase-js";
 
-describe("voteService", () => {
+describe("Vote model", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("createVote", () => {
+  describe("Create Vote", () => {
     it("should insert vote and return data", async () => {
       mockSingle.mockResolvedValue({ data: { id: "vote1" }, error: null });
 
@@ -49,7 +49,7 @@ describe("voteService", () => {
     });
   });
 
-  describe("getVotesBySinger", () => {
+  describe("Get Votes By Singer", () => {
     it("should return votes for singer", async () => {
       mockSelect.mockImplementation(() => ({
         eq: mockEq,
@@ -64,7 +64,7 @@ describe("voteService", () => {
     });
   });
 
-  describe("getSingerVoteStatsForGala", () => {
+  describe("Get Singer Vote Stats For Gala", () => {
     it("should return vote stats grouped by singer", async () => {
       mockSelect.mockImplementation(() => ({
         eq: mockEq,
@@ -87,7 +87,7 @@ describe("voteService", () => {
     });
   });
 
-  describe("getVotesCountBySinger", () => {
+  describe("Get Votes Count By Singer", () => {
     it("should return vote count for all singers", async () => {
       const singers = [
         {
@@ -136,7 +136,7 @@ describe("voteService", () => {
     });
   });
 
-  describe("getVoteByUser", () => {
+  describe("Get Vote By User", () => {
     it("should return vote by user and gala", async () => {
       mockSelect.mockReturnValue({ eq: mockEq });
 
@@ -150,7 +150,7 @@ describe("voteService", () => {
     });
   });
 
-  describe("getSingersByGalaId", () => {
+  describe("Get Singers By Gala Id", () => {
     it("should return singers for gala", async () => {
       mockSelect.mockReturnValue({
         gte: mockGte,

@@ -4,9 +4,9 @@ import {
   mockGetUser,
   mockEq,
   mockSingle,
-} from "../tests/__mocks__/@supabase/supabase-js";
+} from "./__mocks__/@supabase/supabase-js";
 
-describe("verifyToken middleware", () => {
+describe("Authentication", () => {
   let req: Request;
   let res: Response;
   let next: NextFunction;

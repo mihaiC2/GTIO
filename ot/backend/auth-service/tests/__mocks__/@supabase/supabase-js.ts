@@ -3,6 +3,7 @@ export const mockEq = jest.fn();
 export const mockIn = jest.fn();
 export const mockGte = jest.fn();
 export const mockSingle = jest.fn();
+export const mockUpdate = jest.fn();
 
 export const mockSelect = jest.fn(() => ({
   eq: mockEq,
@@ -22,5 +23,6 @@ export const createClient = jest.fn().mockImplementation(() => ({
   from: jest.fn(() => ({
     insert: mockInsert,
     select: mockSelect,
+    update: mockUpdate,
   })),
 }));

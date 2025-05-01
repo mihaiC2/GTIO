@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../src/middleware/auth";
 import {
   mockGetUser,
@@ -6,9 +7,9 @@ import {
 } from "../tests/__mocks__/@supabase/supabase-js";
 
 describe("verifyToken middleware", () => {
-  let req: any;
-  let res: any;
-  let next: jest.Mock;
+  let req: Request;
+  let res: Response;
+  let next: NextFunction;
 
   beforeEach(() => {
     req = { header: jest.fn(), body: {} };

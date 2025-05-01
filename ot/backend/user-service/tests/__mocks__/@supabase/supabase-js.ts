@@ -1,36 +1,27 @@
-const mockGetUser = jest.fn();
-const mockEq = jest.fn();
-const mockIn = jest.fn();
-const mockGte = jest.fn();
-const mockSingle = jest.fn();
+export const mockGetUser = jest.fn();
+export const mockEq = jest.fn();
+export const mockIn = jest.fn();
+export const mockSingle = jest.fn();
+export const mockDelete = jest.fn();
 
-const mockSelect = jest.fn(() => ({
+export const mockSelect = jest.fn(() => ({
   eq: mockEq,
   in: mockIn,
-  gte: mockGte,
   single: mockSingle,
 }));
 
-const mockInsert = jest.fn(() => ({
+export const mockInsert = jest.fn(() => ({
   select: mockSelect,
 }));
 
-export {
-  mockGetUser,
-  mockEq,
-  mockIn,
-  mockGte,
-  mockSingle,
-  mockSelect,
-  mockInsert,
-};
+export const mockFrom = jest.fn(() => ({
+  insert: mockInsert,
+  select: mockSelect,
+}));
 
 export const createClient = jest.fn().mockImplementation(() => ({
   auth: {
     getUser: mockGetUser,
   },
-  from: jest.fn(() => ({
-    insert: mockInsert,
-    select: mockSelect,
-  })),
+  from: mockFrom,
 }));

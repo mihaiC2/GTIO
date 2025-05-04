@@ -10,7 +10,7 @@ app.use(express.json());
 
 import voteRoutes from './routes/votes';
 
-app.use('/', voteRoutes);
+app.use('/votes/', voteRoutes);
 
 const PORT = process.env.PORT || 5003;
 const server = app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));

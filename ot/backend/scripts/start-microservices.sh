@@ -6,6 +6,7 @@ services=("auth-service" "user-service" "singer-service" "vote-service")
 echo "Iniciando instalación de dependencias..."
 
 for service in "${services[@]}"; do
+  cd ..
   if [ -d "$service" ]; then
     cd "$service"
     if [ -f package.json ]; then
@@ -14,7 +15,6 @@ for service in "${services[@]}"; do
     else
       echo "No se encontró package.json en $service"
     fi
-    cd ..
   else
     echo "La carpeta $service no existe"
   fi

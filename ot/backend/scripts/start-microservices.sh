@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e # si falla algo el workflow se detiene
 
 # Lista de carpetas de microservicios
 services=("auth-service" "user-service" "singer-service" "vote-service")
@@ -19,5 +20,3 @@ for service in "${services[@]}"; do
     echo "La carpeta $service no existe"
   fi
 done
-
-echo "Instalación completada!!"

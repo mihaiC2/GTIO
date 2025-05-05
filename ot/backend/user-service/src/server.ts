@@ -10,7 +10,7 @@ app.use(express.json());
 
 import userRoutes from "./routes/users";
 
-app.use("/", userRoutes);
+app.use("/users/", userRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

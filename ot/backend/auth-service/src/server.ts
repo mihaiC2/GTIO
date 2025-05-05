@@ -10,7 +10,7 @@ app.use(express.json());
 
 import authRoutes from "./routes/auth";
 
-app.use("/", authRoutes);
+app.use("/auth/", authRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

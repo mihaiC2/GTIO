@@ -10,7 +10,7 @@ app.use(express.json());
 
 import voteRoutes from "./routes/votes";
 
-app.use("/", voteRoutes);
+app.use("/votes/", voteRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

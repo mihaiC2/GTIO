@@ -10,7 +10,7 @@ app.use(express.json());
 
 import singersRoutes from "./routes/singers";
 
-app.use("/", singersRoutes);
+app.use("/singers/", singersRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

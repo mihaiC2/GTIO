@@ -243,10 +243,10 @@ resource "aws_ecs_task_definition" "microservices" {
       environment = [
         { name = "SUPABASE_URL", value = "https://vucnrhorxrruxlsaumxo.supabase.co" },
         { name = "SUPABASE_KEY", value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Y25yaG9yeHJydXhsc2F1bXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2OTAwMjksImV4cCI6MjA1NjI2NjAyOX0.47UFGmsvsx_w_pJImBU7mexSAJpl8IP_56PmPm5MzVU" },
-        { name = "KONG_DATABASE", value = "postgres" },
-        { name = "KONG_PG_HOST", value = aws_db_instance.kong_db.address },
-        { name = "KONG_PG_USER", value = var.kong_db_user },
-        { name = "KONG_PG_PASSWORD", value = var.kong_db_password }
+        # { name = "KONG_DATABASE", value = "postgres" },
+        # { name = "KONG_PG_HOST", value = aws_db_instance.kong_db.address },
+        # { name = "KONG_PG_USER", value = var.kong_db_user },
+        # { name = "KONG_PG_PASSWORD", value = var.kong_db_password }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -266,29 +266,47 @@ resource "aws_ecs_task_definition" "kong" {
   family                   = "kong"
   requires_compatibilities = ["EC2"]
   network_mode             = "awsvpc"
-  cpu                      = 870
-  memory                   = 870
+  cpu                      = 3072
+  memory                   = 3072
   task_role_arn            = var.ecs_task_role_arn
   execution_role_arn       = var.ecs_task_execution_role_arn
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
 
   container_definitions = jsonencode([
     {
       name  = "kong"
-      image = "kong:3.6"
-        cpu                      = 870
-  memory                   = 870
+      image = "public.ecr.aws/docker/library/kong:3.6"
+        cpu                      = 1024
+  memory                   = 1024
       essential = true
       portMappings = [
-        { containerPort = 8000, hostPort = 8000 },
-        { containerPort = 8001, hostPort = 8001 }
+        { containerPort = 8000, hostPort = 8000, protocol: "tcp",
+            appProtocol: "http" },
+        { containerPort = 8001, hostPort = 8001, protocol: "tcp",
+            appProtocol: "http" }
       ]
       environment = [
         { name = "SUPABASE_URL", value = "https://vucnrhorxrruxlsaumxo.supabase.co" },
         { name = "SUPABASE_KEY", value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Y25yaG9yeHJydXhsc2F1bXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2OTAwMjksImV4cCI6MjA1NjI2NjAyOX0.47UFGmsvsx_w_pJImBU7mexSAJpl8IP_56PmPm5MzVU" },
-        { name = "KONG_DATABASE", value = "postgres" },
-        { name = "KONG_PG_HOST", value = aws_db_instance.kong_db.address },
-        { name = "KONG_PG_USER", value = var.kong_db_user },
-        { name = "KONG_PG_PASSWORD", value = var.kong_db_password }
+        # { name = "POSTGRES_USER", value = "kong" },
+        # { name = "POSTGRES_PASSWORD", value = "kong" },
+        # { name = "POSTGRES_DB", value = "kong" },
+        # { name = "KONG_DATABASE", value = "postgres" },
+        # { name = "KONG_PG_HOST", value = aws_db_instance.kong_db.address },
+        # { name = "KONG_PG_USER", value = var.kong_db_user },
+        # { name = "KONG_PG_PASSWORD", value = var.kong_db_password },
+        { name = "KONG_ADMIN_LISTEN", value = "0.0.0.0:8001" },
+        { name = "KONG_ROLE", value = "data_plane" },
+        # { name = "KONG_PROXY_ACCESS_LOG", value = /dev/stdout },
+        # { name = "KONG_ADMIN_ACCESS_LOG", value = /dev/stdout },
+        # { name = "KONG_PROXY_ERROR_LOG", value = /dev/stdout },
+        # { name = "KONG_ADMIN_ERROR_LOG", value = /dev/stdout },
+        # { name = "KONG_PG_SSL", value = "on" },
+        # { name = "KONG_PG_SSL_VERIFY", value = "off" }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -296,8 +314,67 @@ resource "aws_ecs_task_definition" "kong" {
           awslogs-group         = aws_cloudwatch_log_group.ecs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "kong"
+          mode = "non-blocking"
         }
       }
+    },
+    {
+      name  = "konga"
+      image = "public.ecr.aws/lazsa/pantsel/konga:latest"
+        cpu                      = 1024
+        memory                   = 1024
+      essential = false
+      portMappings = [
+        { 
+            containerPort = 1137, 
+            hostPort = 1137, 
+            protocol: "tcp",
+            appProtocol: "http" 
+        }
+      ]
+      environment = [
+        { name = "SUPABASE_URL", value = "https://vucnrhorxrruxlsaumxo.supabase.co" },
+        { name = "SUPABASE_KEY", value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Y25yaG9yeHJydXhsc2F1bXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2OTAwMjksImV4cCI6MjA1NjI2NjAyOX0.47UFGmsvsx_w_pJImBU7mexSAJpl8IP_56PmPm5MzVU" },
+        # { name = "KONG_DATABASE", value = "postgres" },
+        # { name = "KONG_PG_HOST", value = aws_db_instance.kong_db.address },
+        # { name = "KONG_PG_USER", value = var.kong_db_user },
+        # { name = "KONG_PG_PASSWORD", value = var.kong_db_password },
+        { name = "KONGA_HOST", value = "konga:1337" },
+        { name = "KONGA_PORT", value = "1337" },
+        { name = "KONG_ADMIN_URL", value = "http://kong:8001" },
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs.name
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "konga"
+          mode = "non-blocking"
+        }
+      }
+    },
+    {
+        name  = "postgres"
+        image = "public.ecr.aws/docker/library/postgres:13"
+        cpu   = 512
+        memory = 1024
+        essential = false
+        portMappings = [
+        { containerPort = 5432, hostPort = 5432, protocol = "tcp" }
+        ]
+        environment = [
+        { name = "POSTGRES_USER", value = "kong" },
+        { name = "POSTGRES_PASSWORD", value = "kongpassword" },
+        { name = "POSTGRES_DB", value = "kong" }
+        ]
+        logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+            awslogs-group         = aws_cloudwatch_log_group.ecs.name
+            awslogs-region        = var.aws_region
+            awslogs-stream-prefix = "postgres"
+        }
+        }
     }
   ])
 }
@@ -446,8 +523,8 @@ resource "aws_launch_template" "ecs_lt" {
 
 resource "aws_autoscaling_group" "ecs_asg" {
   name                 = "ecs-asg"
-  desired_capacity     = 5
-  max_size             = 5
+  desired_capacity     = 6
+  max_size             = 6
   min_size             = 1
   vpc_zone_identifier  = var.subnet_ids
 
@@ -463,24 +540,6 @@ resource "aws_autoscaling_group" "ecs_asg" {
   }
 }
 
-# resource "aws_security_group_rule" "allow_all_inbound" {
-#   type              = "ingress"
-#   from_port         = 0
-#   to_port           = 0
-#   protocol          = "-1"
-#   security_group_id = var.security_group_id
-#   cidr_blocks       = ["0.0.0.0/0"]
-# }
-
-# resource "aws_security_group_rule" "allow_all_outbound" {
-#   type              = "egress"
-#   from_port         = 0
-#   to_port           = 0
-#   protocol          = "-1"
-#   security_group_id = var.security_group_id
-#   cidr_blocks       = ["0.0.0.0/0"]
-# }
-
 resource "aws_security_group" "rds_sg" {
   name        = "rds-sg"
   description = "Security group for Kong PostgreSQL DB"
@@ -494,4 +553,90 @@ resource "aws_security_group_rule" "allow_kong_to_rds" {
   protocol                 = "tcp"
   security_group_id        = aws_security_group.rds_sg.id
   source_security_group_id = var.security_group_id  # el de ECS (Kong)
+}
+
+###############################################
+# FrontEnd
+###############################################
+resource "aws_ecs_task_definition" "frontend" {
+  family                   = "nextjs-frontend"
+  requires_compatibilities = ["EC2"]
+  network_mode             = "awsvpc"
+  cpu                      = 870
+  memory                   = 870
+  task_role_arn            = var.ecs_task_role_arn
+  execution_role_arn       = var.ecs_task_execution_role_arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "nextjs-frontend"
+      image = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend-nextjs:latest"
+      cpu   = 870
+      memory = 870
+      essential = true
+      portMappings = [
+        { containerPort = 3000, hostPort = 3000, protocol = "tcp" }
+      ]
+      environment = [
+        { name = "NODE_ENV", value = "production" }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs.name
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "frontend"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_service" "frontend" {
+  name            = "nextjs-frontend"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.frontend.arn
+  desired_count   = 1
+  launch_type     = "EC2" 
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.frontend.arn
+    container_name   = "nextjs-frontend"
+    container_port   = 3000
+  }
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    security_groups  = [var.security_group_id]
+  }
+
+  depends_on = [aws_lb_listener.http]
+}
+
+resource "aws_lb_target_group" "frontend" {
+  name        = "frontend-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path = "/"
+    port = "3000"
+  }
+}
+
+resource "aws_lb_listener_rule" "frontend_rule" {
+  listener_arn = aws_lb_listener.http.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/frontend/*"]
+    }
+  }
 }

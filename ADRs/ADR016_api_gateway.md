@@ -1,4 +1,4 @@
-### Api gateway Decision
+# Api gateway Decision
 - Status: accepted
 - Deciders: Mihail, Yasin, Roberto, Nikol, Jazmin
 - Date: 2025-04-03

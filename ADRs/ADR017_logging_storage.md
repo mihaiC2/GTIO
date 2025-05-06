@@ -1,4 +1,4 @@
-### Logging storage Decision
+# Logging storage Decision
 - Status: accepted
 - Deciders: Mihail, Yasin, Roberto, Nikol, Jazmin
 - Date: 2025-05-01

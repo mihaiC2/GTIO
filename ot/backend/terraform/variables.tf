@@ -11,6 +11,12 @@ variable "vpc_id" {
   default     = "vpc-02b6a00e0a7992c00" # visto - cambiado
 }
 
+variable "launch_type" {
+  description = "Launch type"
+  type        = string
+  default     = "EC2"
+}
+
 # para verlo
 # aws ec2 describe-subnets --query "Subnets[*].{ID:SubnetId, AZ:AvailabilityZone}" --region us-east-1
 variable "subnet_ids" {
@@ -67,4 +73,19 @@ variable "ecs_ami_id" {
   description = "ECS Optimized Amazon Linux 2 AMI ID (latest)"
   type        = string
   default     = "ami-02f4fd63896659509"
+}
+
+###############################################
+# SUPABASE
+###############################################
+variable "supabase_url" {
+  description = "Supabase url"
+  type        = string
+  default     = "https://vucnrhorxrruxlsaumxo.supabase.co"
+}
+
+variable "supabase_key" {
+  description = "Supabase key"
+  type        = string
+  default     = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Y25yaG9yeHJydXhsc2F1bXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2OTAwMjksImV4cCI6MjA1NjI2NjAyOX0.47UFGmsvsx_w_pJImBU7mexSAJpl8IP_56PmPm5MzVU"
 }

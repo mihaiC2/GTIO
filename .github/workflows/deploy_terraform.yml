@@ -1,10 +1,10 @@
-name: Push microservices to terraform
+name: Deploy to terraform
 
 on:
   workflow_dispatch:
     inputs:
       aws_credentials:
-        description: "Input aws credentials"
+        description: "Ingresar aws credentials"
         required: true
         type: string
 
@@ -22,7 +22,7 @@ jobs:
           mkdir -p ~/.aws
           echo "${{ inputs.aws_credentials }}" | sed 's/\\n/\n/g' > ~/.aws/credentials
 
-      - name: Push microservices
+      - name: Deploy terraform
         run: |
-          cd ot/backend/scripts/
-          bash push-microservices.sh
+          cd ot/backend/scripts/terraform/
+          bash execute-terraform.sh

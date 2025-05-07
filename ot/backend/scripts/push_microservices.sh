@@ -4,7 +4,7 @@ set -e
 
 # Configuraciones iniciales
 AWS_REGION="us-east-1"
-AWS_ACCOUNT_ID="669278498447"  # <-- cambia este si es necesario
+AWS_ACCOUNT_ID="669278498447"
 
 # Lista de carpetas de microservicios
 services=("auth-service" "user-service" "singer-service" "vote-service")

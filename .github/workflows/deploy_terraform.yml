@@ -3,8 +3,9 @@ name: Deploy to terraform
 on:
   workflow_dispatch:
     inputs:
+      # TODO: environment var to handle terraform vars
       aws_credentials:
-        description: "Ingresar aws credentials"
+        description: "Input aws credentials"
         required: true
         type: string
 

@@ -1,0 +1,29 @@
+name: Deploy to terraform
+
+on:
+  workflow_dispatch:
+    inputs:
+      # TODO: environment var to handle terraform vars
+      aws_credentials:
+        description: "Input aws credentials"
+        required: true
+        type: string
+
+jobs:
+  Push-microservicies:
+    name: Push microservices to terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Crear ~/.aws/credentials
+        run: |
+          mkdir -p ~/.aws
+          echo "${{ inputs.aws_credentials }}" | sed 's/\\n/\n/g' > ~/.aws/credentials
+
+      - name: Deploy terraform
+        run: |
+          cd ot/backend/scripts/terraform/
+          bash execute-terraform.sh

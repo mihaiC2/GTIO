@@ -15,7 +15,6 @@ const logger = winston.createLogger({
         new MongoDB({
             db: process.env.MONGODB_URL || 'mongodb://localhost:27017',
             collection: 'winston_logs',
-            // options: { useUnifiedTopology: true },
             level: 'info',
             tryReconnect: true,
             format: winston.format.metadata(),

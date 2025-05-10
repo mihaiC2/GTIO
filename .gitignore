@@ -4,4 +4,4 @@
 **/logs
 
 .terraform/
-.terraform
+ot/backend/terraform/dev.tfvars

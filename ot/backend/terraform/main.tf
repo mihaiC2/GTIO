@@ -21,19 +21,6 @@ resource "aws_ecs_cluster" "main" {
 }
 
 ###############################################
-# CloudWatch Logs
-###############################################
-resource "aws_cloudwatch_log_group" "ecs" {
-  name              = "/ecs/microservices"
-  retention_in_days = 7
-}
-
-resource "aws_cloudwatch_log_group" "kong" {
-  name              = "/ecs/kong"
-  retention_in_days = 7
-}
-
-###############################################
 # Application Load Balancer
 ###############################################
 
@@ -46,22 +33,22 @@ resource "aws_lb" "alb" {
 }
 
 resource "aws_lb_target_group" "tg" {
-    for_each = local.microservice_ports
+  for_each = local.microservice_ports
 
-    name        = "${each.key}-tg"
-    port        = each.value
-    protocol    = "HTTP"
-    vpc_id      = var.vpc_id
-    target_type = "ip"
+  name        = "${each.key}-tg"
+  port        = each.value
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
 
-    health_check {
-        path                = "/health"
-        protocol            = "HTTP"
-        interval            = 30
-        timeout             = 5
-        healthy_threshold   = 2
-        unhealthy_threshold = 2
-    }
+  health_check {
+    path                = "/health"
+    protocol            = "HTTP"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 }
 
 # Target group para Kong
@@ -79,14 +66,14 @@ resource "aws_lb_target_group" "kong" {
     # timeout             = 5
     # healthy_threshold   = 2
     # unhealthy_threshold = 2
-    path = "/"
+    path     = "/"
     protocol = "HTTP"
   }
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.alb.arn
-  port              = 80 
+  port              = 80
   protocol          = "HTTP"
 
   default_action {
@@ -94,17 +81,6 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.frontend.arn
   }
 }
-
-# resource "aws_lb_listener" "httpKong" {
-#   load_balancer_arn = aws_lb.alb.arn
-#   port              = 8000  # Puerto donde Kong escucha
-#   protocol          = "HTTP"
-
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.kong.arn
-#   }
-# }
 
 resource "aws_lb_listener_rule" "auth_service" {
   listener_arn = aws_lb_listener.http.arn
@@ -170,6 +146,22 @@ resource "aws_lb_listener_rule" "vote_service" {
   }
 }
 
+resource "aws_lb_listener_rule" "kong_rule" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 50
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.kong.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/kong*", "/kong/*"]
+    }
+  }
+}
+
 ###############################################
 # ECS Task Definitions (Microservices + Kong)
 ###############################################
@@ -196,15 +188,14 @@ resource "aws_ecs_task_definition" "microservices" {
   task_role_arn            = var.ecs_task_role_arn
   execution_role_arn       = var.ecs_task_execution_role_arn
 
-      cpu       = 512
-      memory    = 512
+  cpu    = 512
+  memory = 512
 
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
   }
 
-// SUPABASE_URL=https://vucnrhorxrruxlsaumxo.supabase.co
   container_definitions = jsonencode([
     {
       name      = each.key
@@ -214,11 +205,11 @@ resource "aws_ecs_task_definition" "microservices" {
       memory    = 512
       portMappings = [
         {
-          name = "${each.key}-${each.value.port}-tcp"
+          name          = "${each.key}-${each.value.port}-tcp"
           containerPort = each.value.port
           hostPort      = each.value.port
-          protocol = "tcp",
-            appProtocol = "http"
+          protocol      = "tcp",
+          appProtocol   = "http"
         }
       ]
       environment = [
@@ -235,7 +226,7 @@ resource "aws_ecs_task_definition" "microservices" {
           awslogs-group         = aws_cloudwatch_log_group.ecs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = each.key
-          mode = "non-blocking"
+          mode                  = "non-blocking"
         }
       }
     }
@@ -259,16 +250,23 @@ resource "aws_ecs_task_definition" "kong" {
 
   container_definitions = jsonencode([
     {
-      name  = "kong"
-      image = "public.ecr.aws/docker/library/kong:3.6"
-      cpu = 870
-      memory = 870
+      name      = "kong"
+      image     = "public.ecr.aws/docker/library/kong:3.6"
+      cpu       = 870
+      memory    = 870
       essential = true
       portMappings = [
-        { containerPort = 8000, hostPort = 8000, protocol = "tcp",
-            appProtocol = "http" },
-        { containerPort = 8001, hostPort = 8001, protocol = "tcp",
-            appProtocol = "http" }
+        {
+          containerPort = 8000,
+          hostPort      = 8000,
+          protocol      = "tcp",
+          appProtocol   = "http"
+        },
+        { containerPort = 8001,
+          hostPort      = 8001,
+          protocol      = "tcp",
+          appProtocol   = "http"
+        }
       ]
       environment = [
         { name = "SUPABASE_URL", value = var.supabase_url },
@@ -284,17 +282,16 @@ resource "aws_ecs_task_definition" "kong" {
         { name = "KONG_ADMIN_ERROR_LOG", value = "/dev/stderr" },
         { name = "KONG_LOG_LEVEL", value = "debug" },
         { name = "KONG_PG_LOG_QUERIES", value = "on" },
-        { name  = "KONG_PG_SSL", value = "on" },
-        { name  = "KONG_PG_SSL_VERIFY", value = "off" }
-
+        { name = "KONG_PG_SSL", value = "on" },
+        { name = "KONG_PG_SSL_VERIFY", value = "off" }
       ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.kong.name # "/ecs/kong"
+          awslogs-group         = aws_cloudwatch_log_group.kong.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "kong"
-          mode = "non-blocking"
+          mode                  = "non-blocking"
         }
       }
     },
@@ -314,17 +311,17 @@ resource "aws_ecs_service" "microservices" {
   desired_count   = 1
   launch_type     = var.launch_type
 
-    load_balancer {
-        target_group_arn = aws_lb_target_group.tg[each.key].arn
-        container_name   = each.key
-        container_port   = local.microservice_ports[each.key]
-    }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.tg[each.key].arn
+    container_name   = each.key
+    container_port   = local.microservice_ports[each.key]
+  }
 
-    network_configuration {
-        subnets          = var.subnet_ids
-        security_groups  = [var.security_group_id]
-        assign_public_ip = false
-    }
+  network_configuration {
+    subnets          = var.subnet_ids
+    security_groups  = [var.security_group_id]
+    assign_public_ip = false
+  }
 
   depends_on = [aws_lb_listener.http]
 }
@@ -336,7 +333,7 @@ resource "aws_ecs_service" "kong" {
   desired_count   = 1
   launch_type     = var.launch_type
 
- load_balancer {
+  load_balancer {
     target_group_arn = aws_lb_target_group.kong.arn
     container_name   = "kong"
     container_port   = 8000
@@ -347,13 +344,9 @@ resource "aws_ecs_service" "kong" {
     security_groups  = [var.security_group_id]
     assign_public_ip = false
   }
-  
-  #depends_on = [aws_lb_listener.httpKong, aws_db_instance.kong_db]
-  # depends_on = [aws_lb_listener.http, aws_db_instance.kong_db, null_resource.run_kong_migration]
+
   depends_on = [aws_lb_listener.http, aws_db_instance.kong_db]
 }
-
-
 
 # ###############################################
 # # RDS Postgres (Kong Database)
@@ -364,11 +357,11 @@ resource "aws_db_instance" "kong_db" {
   instance_class    = "db.t3.medium"
   allocated_storage = 20
 
-  db_name              = "kong"
-  username          = var.kong_db_user
-  password          = var.kong_db_password
+  db_name  = "kong"
+  username = var.kong_db_user
+  password = var.kong_db_password
 
-  publicly_accessible     = true
+  publicly_accessible    = true
   vpc_security_group_ids = [var.security_group_id]
   db_subnet_group_name   = aws_db_subnet_group.db_subnets.name
 
@@ -385,7 +378,7 @@ resource "aws_db_subnet_group" "db_subnets" {
 ###############################################
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "ecs-"
-    image_id      = var.ecs_ami_id
+  image_id      = var.ecs_ami_id
   instance_type = "t3.small"
   key_name      = "vockey"
 
@@ -397,13 +390,13 @@ resource "aws_launch_template" "ecs_lt" {
                 #!/bin/bash
                 echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
                 EOF
-    )
+  )
 
   network_interfaces {
-    device_index = 0
-    subnet_id = var.subnet_ids[0] # ⚠️ Asignar explícitamente una subnet pública aquí si quieres
+    device_index                = 0
+    subnet_id                   = var.subnet_ids[0]
     associate_public_ip_address = true
-    security_groups = [var.security_group_id]
+    security_groups             = [var.security_group_id]
   }
 
   tag_specifications {
@@ -415,11 +408,11 @@ resource "aws_launch_template" "ecs_lt" {
 }
 
 resource "aws_autoscaling_group" "ecs_asg" {
-  name                 = "ecs-asg"
-  desired_capacity     = 6
-  max_size             = 6
-  min_size             = 1
-  vpc_zone_identifier  = var.subnet_ids
+  name                = "ecs-asg"
+  desired_capacity    = 6
+  max_size            = 6
+  min_size            = 1
+  vpc_zone_identifier = var.subnet_ids
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
@@ -443,16 +436,12 @@ resource "aws_vpc_security_group_egress_rule" "rds_sg_egress" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "rds_sg_ingress" {
-  security_group_id = var.security_group_id
+  security_group_id            = var.security_group_id
   referenced_security_group_id = var.security_group_id
-  ip_protocol = "tcp"
-  from_port   = 5432
-  to_port     = 5432
-  
-  # cidr_ipv4 = ["${aws_security_group.kong_sg.id}"]
+  ip_protocol                  = "tcp"
+  from_port                    = 5432
+  to_port                      = 5432
 }
-
-
 
 ###############################################
 # FrontEnd
@@ -468,13 +457,13 @@ resource "aws_ecs_task_definition" "frontend" {
 
   container_definitions = jsonencode([
     {
-      name  = "nextjs-frontend"
-      image = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend-nextjs:latest"
-      cpu   = 870
-      memory = 870
+      name      = "nextjs-frontend"
+      image     = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend-nextjs:latest"
+      cpu       = 870
+      memory    = 870
       essential = true
       portMappings = [
-        { containerPort = 3000, hostPort = 3000, protocol = "tcp", appProtocol   = "http" }
+        { containerPort = 3000, hostPort = 3000, protocol = "tcp", appProtocol = "http" }
       ]
       environment = [
         { name = "NODE_ENV", value = "production" }
@@ -505,8 +494,8 @@ resource "aws_ecs_service" "frontend" {
   }
 
   network_configuration {
-    subnets          = var.subnet_ids
-    security_groups  = [var.security_group_id]
+    subnets         = var.subnet_ids
+    security_groups = [var.security_group_id]
   }
 
   depends_on = [aws_lb_listener.http]
@@ -527,7 +516,7 @@ resource "aws_lb_target_group" "frontend" {
 
 resource "aws_lb_listener_rule" "frontend_rule" {
   listener_arn = aws_lb_listener.http.arn
-  priority = 1
+  priority     = 1
 
   action {
     type             = "forward"
@@ -541,13 +530,15 @@ resource "aws_lb_listener_rule" "frontend_rule" {
   }
 }
 
-# KONG MIGRATION
+###############################################
+# Kong Migration
+###############################################
 resource "aws_ecs_task_definition" "kong-migration" {
   family                   = "kong-migration"
   requires_compatibilities = [var.launch_type]
-  network_mode            = "awsvpc"
-  cpu                     = 512
-  memory                  = 512
+  network_mode             = "awsvpc"
+  cpu                      = 512
+  memory                   = 512
   task_role_arn            = var.ecs_task_role_arn
   execution_role_arn       = var.ecs_task_execution_role_arn
 
@@ -561,12 +552,10 @@ resource "aws_ecs_task_definition" "kong-migration" {
       name      = "kong-migration"
       image     = "public.ecr.aws/docker/library/kong:3.6"
       essential = true
-        cpu                     = 512
-  memory                  = 512
-
-      command = ["kong", "migrations", "bootstrap"]
+      cpu       = 512
+      memory    = 512
+      command   = ["kong", "migrations", "bootstrap"]
       environment = [
-
         { name = "KONG_DATABASE", value = "postgres" },
         { name = "KONG_PG_HOST", value = "kong-db.ckozktn4ihau.us-east-1.rds.amazonaws.com" },
         { name = "KONG_PG_USER", value = var.kong_db_user },
@@ -586,62 +575,3 @@ resource "aws_ecs_task_definition" "kong-migration" {
     }
   ])
 }
-
-# resource "null_resource" "run_kong_migration" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-# aws ecs run-task \
-#   --cluster ${aws_ecs_cluster.main.name} \
-#   --launch-type EC2 \
-#   --network-configuration "awsvpcConfiguration={subnets=[${join(",", var.subnet_ids)}],securityGroups=[\"${var.security_group_id}\"],assignPublicIp=\"DISABLED\"}" \
-#   --task-definition ${aws_ecs_task_definition.kong_migration.arn}
-# EOT
-#   }
-
-#   depends_on = [
-#     aws_db_instance.kong_db,
-#     aws_ecs_task_definition.kong_migration
-#   ]
-# }
-# resource "null_resource" "run_kong_migration" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-# #!/bin/bash
-# set -e
-
-# echo "🚀 Ejecutando migración de Kong..."
-
-# # Ejecutar el task de ECS para la migración
-# TASK_ARN=$(aws ecs run-task \
-#   --cluster ecs-cluster \
-#   --launch-type EC2 \
-#   --network-configuration "awsvpcConfiguration={subnets=[subnet-00886bfc24068cf25,subnet-06f9963806a225b3f,subnet-06fd0ed8cb7fd4476,subnet-0594bada3fb3fa148,subnet-0d33db4305b91a8fc],securityGroups=[\"sg-0dd6ec0d822c28e8a\"],assignPublicIp=\"DISABLED\"}" \
-#   --task-definition kong-migration \
-#   --output json)
-
-# echo "🔍 Resultado de run-task:"
-# echo "$TASK_ARN"
-# aws ecs wait tasks-stopped --cluster ecs-cluster --tasks "$TASK_ARN"
-
-# # Obtener exit code del contenedor
-# EXIT_CODE=$(aws ecs describe-tasks \
-#   --cluster ecs-cluster \
-#   --tasks "$TASK_ARN" \
-#   --query 'tasks[0].containers[0].exitCode' \
-#   --output text)
-
-# if [ "$EXIT_CODE" -ne 0 ]; then
-#   echo "❌ Error: la migración de Kong falló con código $EXIT_CODE"
-#   exit 1
-# else
-#   echo "✅ Migración de Kong completada con éxito."
-# fi
-# EOT
-#   }
-
-#   depends_on = [
-#     aws_db_instance.kong_db,
-#     aws_ecs_task_definition.kong-migration
-#   ]
-# }
-

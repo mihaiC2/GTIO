@@ -71,6 +71,17 @@ resource "aws_lb_listener" "front_listener" {
   }
 }
 
+# Permitir tráfico HTTP (puerto 80) entrante desde cualquier lugar
+resource "aws_security_group_rule" "allow_http_ingress" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.security_group_id
+  description       = "Allow HTTP access to frontend"
+}
+
 ###### Kong ###### 
 resource "aws_lb" "alb" {
   name               = "ecs-alb"
@@ -91,6 +102,17 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+resource "aws_lb_listener" "kong-admin" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 8001
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.kong-admin-tg.arn
+  }
+}
+
 resource "aws_lb_target_group" "kong" {
   name        = "kong-tg"
   port        = 8000
@@ -102,4 +124,54 @@ resource "aws_lb_target_group" "kong" {
     path     = "/"
     protocol = "HTTP"
   }
+}
+
+resource "aws_lb_target_group" "kong-admin-tg" {
+  name        = "kong-admin-tg"
+  port        = 8001
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path     = "/"
+    protocol = "HTTP"
+  }
+}
+
+resource "aws_lb_target_group" "konga" {
+  name        = "tg-konga"
+  port        = 1337
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "instance"
+  health_check {
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200-399"
+  }
+}
+
+resource "aws_lb_listener" "konga_listener" {
+  load_balancer_arn = aws_lb.front-alb.arn
+  port              = 1337
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.konga.arn
+  }
+}
+
+resource "aws_security_group_rule" "allow_konga_ingress" {
+  type              = "ingress"
+  from_port         = 1337
+  to_port           = 1337
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.security_group_id
+  description       = "Allow connections on konga on port 1337"
 }

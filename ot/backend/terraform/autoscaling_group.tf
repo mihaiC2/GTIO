@@ -1,7 +1,7 @@
 resource "aws_autoscaling_group" "ecs_asg" {
   name                = "ecs-asg"
-  desired_capacity    = 6
-  max_size            = 6
+  desired_capacity    = 9
+  max_size            = 10
   min_size            = 1
   vpc_zone_identifier = var.subnet_ids
 
@@ -15,6 +15,15 @@ resource "aws_autoscaling_group" "ecs_asg" {
     value               = "ecs-container-instance"
     propagate_at_launch = true
   }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ssh_ingress" {
+  security_group_id = var.security_group_id
+
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "tcp"
+  cidr_ipv4   = "0.0.0.0/0"
 }
 
 resource "aws_vpc_security_group_egress_rule" "rds_sg_egress" {

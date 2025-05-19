@@ -38,15 +38,16 @@ resource "aws_ecs_task_definition" "microservices" {
       environment = [
         { name = "SUPABASE_URL", value = var.supabase_url },
         { name = "SUPABASE_KEY", value = var.supabase_key },
-        { name = "KONG_DATABASE", value = "postgres" },
-        { name = "KONG_PG_HOST", value = "kong-db.ckozktn4ihau.us-east-1.rds.amazonaws.com" },
-        { name = "KONG_PG_USER", value = var.kong_db_user },
-        { name = "KONG_PG_PASSWORD", value = var.kong_db_password }
+        { name = "MONGODB_URL", value = var.mongodb_url },
+        # { name = "KONG_DATABASE", value = "postgres" },
+        # { name = "KONG_PG_HOST", value = "kong-db.ckozktn4ihau.us-east-1.rds.amazonaws.com" },
+        # { name = "KONG_PG_USER", value = var.kong_db_user },
+        # { name = "KONG_PG_PASSWORD", value = var.kong_db_password }
       ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.ecs.name
+          awslogs-group         = aws_cloudwatch_log_group.ecs_lg.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = each.key
           mode                  = "non-blocking"
@@ -81,11 +82,93 @@ resource "aws_ecs_task_definition" "frontend" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.ecs.name
+          awslogs-group         = aws_cloudwatch_log_group.ecs_lg.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "frontend"
         }
       }
     }
   ])
+}
+
+resource "aws_ecs_task_definition" "kong_database" {
+  family                   = "kong-database"
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  container_definitions = jsonencode([
+    {
+      name      = "kong-database"
+      image     = "postgres:13"
+      essential = true
+      environment = [
+        { name = "POSTGRES_USER", value = var.kong_db_user },
+        { name = "POSTGRES_PASSWORD", value = var.kong_db_password },
+        { name = "POSTGRES_DB", value = var.kong_db_name }
+      ],
+      mountPoints = [],
+      portMappings = [
+        {
+          containerPort = 5432
+          hostPort      = 5432
+        }
+      ],
+      healthCheck = {
+        command     = ["CMD-SHELL", "pg_isready -U ${var.kong_db_user}"]
+        interval    = 10
+        timeout     = 5
+        retries     = 3
+        startPeriod = 10
+      },
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/kong-db"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "kong-db"
+        }
+      }
+    }
+  ])
+  task_role_arn = var.ecs_task_execution_role_arn
+
+}
+
+resource "aws_ecs_task_definition" "konga" {
+  family                   = "konga"
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  container_definitions = jsonencode([
+    {
+      name      = "konga"
+      image     = "pantsel/konga:latest"
+      essential = true
+      environment = [
+        { name = "KONG_ADMIN_URL", value = local.kong_admin_url },
+        { name = "KONGA_PORT", value = "1337" }
+      ],
+      portMappings = [
+        {
+          containerPort = 1337
+          hostPort      = 1337
+        }
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/konga"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "konga"
+        }
+      }
+    }
+  ])
+  depends_on    = [aws_lb.alb]
+  task_role_arn = var.ecs_task_execution_role_arn
 }

@@ -31,7 +31,7 @@ variable "security_group_id" {
 }
 
 ###############################################
-# RDS Postgres (Kong Database)
+# EC2 Postgres (Kong Database)
 ###############################################
 
 variable "kong_db_user" {
@@ -43,6 +43,10 @@ variable "kong_db_password" {
   description = "Kong user password"
   type        = string
   sensitive   = true
+}
+variable "kong_db_name" {
+  description = "Nombre de la base de datos de Kong"
+  type        = string
 }
 
 ###############################################
@@ -87,6 +91,12 @@ variable "supabase_url" {
 
 variable "supabase_key" {
   description = "Supabase key"
+  type        = string
+  sensitive   = true
+}
+
+variable "mongodb_url" {
+  description = "Mongo URL"
   type        = string
   sensitive   = true
 }

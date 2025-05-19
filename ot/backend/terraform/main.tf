@@ -21,6 +21,8 @@ locals {
     { name = "vote-service", port = 5003 }
   ]
 
+  kong_admin_url = "http://${aws_lb.alb.dns_name}:8001"
+
   microservice_ports = {
     for svc in local.microservices : svc.name => svc.port
   }

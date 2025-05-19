@@ -1,10 +1,11 @@
 networks:
   default:
-    external: true
+    external: false
     name: kong-net
 
 volumes:
   kong-db-data:
+
 
 services:
   kong-database:
@@ -19,7 +20,7 @@ services:
     networks:
       - default
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -40,6 +41,7 @@ services:
       KONG_ADMIN_ACCESS_LOG: ${KONG_ADMIN_ACCESS_LOG}
       KONG_PROXY_ERROR_LOG: ${KONG_PROXY_ERROR_LOG}
       KONG_ADMIN_ERROR_LOG: ${KONG_ADMIN_ERROR_LOG}
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
     command: >
       sh -c "kong migrations bootstrap && kong start"
     ports:
@@ -52,7 +54,7 @@ services:
     image: pantsel/konga:latest
     container_name: konga
     environment:
-      - "KONGA_HOST=${KONGA_HOST}"
+      # - "KONGA_HOST=${KONGA_HOST}"
       - "KONGA_PORT=${KONGA_PORT}"
       - "KONG_ADMIN_URL=${KONG_ADMIN_URL}"
     ports:
@@ -68,6 +70,7 @@ services:
     ports:
       - "5000:5000"
     environment:
+      - MONGODB_URL=${MONGODB_URL}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - PORT=5000
@@ -80,6 +83,7 @@ services:
     ports:
       - "5001:5001"
     environment:
+      - MONGODB_URL=${MONGODB_URL}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - PORT=5001
@@ -92,6 +96,7 @@ services:
     ports:
       - "5002:5002"
     environment:
+      - MONGODB_URL=${MONGODB_URL}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - PORT=5002
@@ -104,6 +109,7 @@ services:
     ports:
       - "5003:5003"
     environment:
+      - MONGODB_URL=${MONGODB_URL}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - PORT=5003

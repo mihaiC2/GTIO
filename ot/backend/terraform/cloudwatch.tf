@@ -11,8 +11,13 @@ resource "aws_cloudwatch_log_group" "kong_lg" {
   retention_in_days = 7
 }
 
-resource "aws_cloudwatch_log_group" "kong_db" {
+resource "aws_cloudwatch_log_group" "kong_db_lg" {
   name              = "/ecs/kong-database"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "konga_lg" {
+  name              = "/ecs/konga"
   retention_in_days = 7
 }
 

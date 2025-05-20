@@ -38,11 +38,7 @@ resource "aws_ecs_task_definition" "microservices" {
       environment = [
         { name = "SUPABASE_URL", value = var.supabase_url },
         { name = "SUPABASE_KEY", value = var.supabase_key },
-        { name = "MONGODB_URL", value = var.mongodb_url },
-        # { name = "KONG_DATABASE", value = "postgres" },
-        # { name = "KONG_PG_HOST", value = "kong-db.ckozktn4ihau.us-east-1.rds.amazonaws.com" },
-        # { name = "KONG_PG_USER", value = var.kong_db_user },
-        # { name = "KONG_PG_PASSWORD", value = var.kong_db_password }
+        { name = "MONGODB_URL", value = var.mongodb_url }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -93,7 +89,7 @@ resource "aws_ecs_task_definition" "frontend" {
 
 resource "aws_ecs_task_definition" "kong_database" {
   family                   = "kong-database"
-  network_mode             = "bridge"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
@@ -126,7 +122,7 @@ resource "aws_ecs_task_definition" "kong_database" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/ecs/kong-db"
+          awslogs-group         = aws_cloudwatch_log_group.kong_db_lg.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "kong-db"
         }
@@ -139,7 +135,7 @@ resource "aws_ecs_task_definition" "kong_database" {
 
 resource "aws_ecs_task_definition" "konga" {
   family                   = "konga"
-  network_mode             = "bridge"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
@@ -162,7 +158,7 @@ resource "aws_ecs_task_definition" "konga" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/ecs/konga"
+          awslogs-group         = aws_cloudwatch_log_group.konga_lg.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "konga"
         }

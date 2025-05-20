@@ -49,6 +49,12 @@ variable "kong_db_name" {
   type        = string
 }
 
+variable "kong_db_ip" {
+  description = "IP privada de la instancia que está corriendo kong_db"
+  type        = string
+  default     = ""
+}
+
 ###############################################
 # IAM Roles
 ###############################################

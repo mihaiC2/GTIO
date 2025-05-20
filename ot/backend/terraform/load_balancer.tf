@@ -1,5 +1,5 @@
 ###############################################
-# Application Load Balancer
+# Application Load Balancers
 ###############################################
 
 ###### Microservicios ###### 
@@ -41,7 +41,7 @@ resource "aws_lb_listener" "micro_listener" {
 ###### Front ######
 resource "aws_lb_target_group" "frontend-alb-tg" {
   name        = "frontend-alb-tg"
-  port        = 8000
+  port        = 3000
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -91,9 +91,10 @@ resource "aws_lb" "alb" {
   subnets            = var.subnet_ids
 }
 
+// Escuchar peticiones al puerto 8000
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.alb.arn
-  port              = 80
+  port              = 8000
   protocol          = "HTTP"
 
   default_action {
@@ -102,6 +103,7 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+// Escuchar config al puerto 8001
 resource "aws_lb_listener" "kong-admin" {
   load_balancer_arn = aws_lb.alb.arn
   port              = 8001
@@ -121,7 +123,7 @@ resource "aws_lb_target_group" "kong" {
   target_type = "ip"
 
   health_check {
-    path     = "/"
+    path     = "/status"
     protocol = "HTTP"
   }
 }
@@ -138,13 +140,26 @@ resource "aws_lb_target_group" "kong-admin-tg" {
     protocol = "HTTP"
   }
 }
+resource "aws_security_group_rule" "kong_group_rule" {
+  type      = "ingress"
+  from_port = 8000
+  to_port   = 8000
+  protocol  = "tcp"
+  cidr_blocks = [
+    "0.0.0.0/0"
+  ]
+  security_group_id = var.security_group_id
+  description       = "Allow kong petitions from anywhere"
+}
 
+// Konga
 resource "aws_lb_target_group" "konga" {
   name        = "tg-konga"
   port        = 1337
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
-  target_type = "instance"
+  target_type = "ip"
+
   health_check {
     path                = "/"
     interval            = 30
@@ -174,4 +189,17 @@ resource "aws_security_group_rule" "allow_konga_ingress" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = var.security_group_id
   description       = "Allow connections on konga on port 1337"
+}
+
+resource "aws_security_group_rule" "allow_konga_to_kong_admin" {
+  type      = "ingress"
+  from_port = 8001
+  to_port   = 8001
+  protocol  = "tcp"
+  cidr_blocks = [
+    "47.63.123.0/24",
+    "130.206.158.0/24"
+  ] ## Aquí configura tu ip o una subred en la que estés (no queremos que cualquiera tenga acceso)
+  security_group_id = var.security_group_id
+  description       = "Allow kong config only from trusted domains"
 }

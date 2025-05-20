@@ -73,6 +73,7 @@ services:
       - MONGODB_URL=${MONGODB_URL}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      - KONG_ADMIN_URL=${KONG_ADMIN_URL}
       - PORT=5000
     networks:
       - default
